@@ -3158,20 +3158,6 @@ function Library:CreateWindow(...)
             TabListLayout:ApplyLayout();
         end;
 
-        TabButton.InputBegan:Connect(function(Input)
-            if Input.UserInputType == Enum.UserInputType.MouseButton1 then
-                Tab:ShowTab();
-            end;
-        end);
-
-        if #TabContainer:GetChildren() == 1 then
-            Tab:ShowTab();
-        end;
-
-        Window.Tabs[Name] = Tab;
-        return Tab;
-    end;
-
         function Tab:AddGroupbox(Info)
             local Groupbox = {};
 
