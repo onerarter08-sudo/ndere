@@ -2944,11 +2944,9 @@ function Library:CreateWindow(...)
     end
 
     if type(Config.Title) ~= 'string' then Config.Title = 'KAMIDERE' end
-    if type(Config.TabPadding) ~= 'number' then Config.TabPadding = 5 end
     if type(Config.MenuFadeTime) ~= 'number' then Config.MenuFadeTime = 0.2 end
-
     if typeof(Config.Position) ~= 'UDim2' then Config.Position = UDim2.fromOffset(175, 50) end
-    if typeof(Config.Size) ~= 'UDim2' then Config.Size = UDim2.fromOffset(650, 500) end -- Сделали чуть шире под левую панель
+    if typeof(Config.Size) ~= 'UDim2' then Config.Size = UDim2.fromOffset(620, 500) end
 
     if Config.Center then
         Config.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -2959,77 +2957,81 @@ function Library:CreateWindow(...)
         Tabs = {};
     };
 
-    -- Главный фон окна
+    -- === 1. ГЛАВНОЕ ОКНО ===
     local Outer = Library:Create('Frame', {
         AnchorPoint = Config.AnchorPoint,
-        BackgroundColor3 = Library.BackgroundColor, -- Темный фон
+        BackgroundColor3 = Library.BackgroundColor,
         BorderSizePixel = 0,
         Position = Config.Position,
         Size = Config.Size,
         Visible = false;
         ZIndex = 1;
         Parent = ScreenGui;
+        ClipsDescendants = true; -- МАГИЯ ЗДЕСЬ: Ничего не вылезет за края скруглений!
     });
 
-    -- Скругление главного окна
     Library:Create('UICorner', {
-        CornerRadius = UDim.new(0, 8),
+        CornerRadius = UDim.new(0, 6),
         Parent = Outer
-    })
+    });
 
-    Library:MakeDraggable(Outer, 25);
+    Library:MakeDraggable(Outer, 30);
 
-    -- Левая панель (для табов)
+    -- === 2. ЛЕВАЯ ПАНЕЛЬ (ТАБЫ) ===
     local LeftPanel = Library:Create('Frame', {
-        BackgroundColor3 = Library.MainColor,
-        BackgroundTransparency = 1, -- Делаем прозрачной, чтобы сливалась с фоном
+        BackgroundColor3 = Library.MainColor, -- Цвет левой менюшки
         BorderSizePixel = 0,
         Position = UDim2.new(0, 0, 0, 0),
-        Size = UDim2.new(0, 140, 1, 0), -- Ширина 140 пикселей, высота на всё окно
+        Size = UDim2.new(0, 150, 1, 0), -- Ширина 150px
         ZIndex = 2,
         Parent = Outer;
     });
 
-    -- Название софта (KAMIDERE) в левом верхнем углу
+    -- Линия-разделитель (как в Kamidere)
+    local Divider = Library:Create('Frame', {
+        BackgroundColor3 = Library.OutlineColor,
+        BorderSizePixel = 0,
+        Position = UDim2.new(1, -1, 0, 0),
+        Size = UDim2.new(0, 1, 1, 0),
+        ZIndex = 3,
+        Parent = LeftPanel;
+    });
+
     local WindowLabel = Library:CreateLabel({
         Position = UDim2.new(0, 15, 0, 15),
         Size = UDim2.new(1, -30, 0, 20),
         Text = Config.Title,
-        Font = Enum.Font.GothamBold, -- Жирный современный шрифт
+        Font = Enum.Font.GothamBold,
         TextSize = 16,
         TextXAlignment = Enum.TextXAlignment.Left,
-        TextColor3 = Library.AccentColor, -- Цвет текста - акцентный
+        TextColor3 = Library.AccentColor,
         ZIndex = 3;
         Parent = LeftPanel;
     });
 
-    Library:AddToRegistry(WindowLabel, {
-        TextColor3 = 'AccentColor';
-    });
+    Library:AddToRegistry(WindowLabel, { TextColor3 = 'AccentColor' });
 
-    -- Зона, где будут списком лежать сами табы (кнопки)
     local TabArea = Library:Create('Frame', {
         BackgroundTransparency = 1;
-        Position = UDim2.new(0, 10, 0, 50); -- Отступ сверху после названия
+        Position = UDim2.new(0, 10, 0, 50);
         Size = UDim2.new(1, -20, 1, -60);
         ZIndex = 3;
         Parent = LeftPanel;
     });
 
     local TabListLayout = Library:Create('UIListLayout', {
-        Padding = UDim.new(0, Config.TabPadding);
-        FillDirection = Enum.FillDirection.Vertical; -- ВАЖНО: Теперь табы идут сверху вниз!
+        Padding = UDim.new(0, 5);
+        FillDirection = Enum.FillDirection.Vertical;
         SortOrder = Enum.SortOrder.LayoutOrder;
         Parent = TabArea;
     });
 
-    -- Правая панель (для контента/группбоксов)
+    -- === 3. ПРАВАЯ ПАНЕЛЬ (КОНТЕНТ) ===
     local TabContainer = Library:Create('Frame', {
-        BackgroundColor3 = Library.BackgroundColor,
-        BackgroundTransparency = 1,
+        BackgroundTransparency = 1;
         BorderSizePixel = 0,
-        Position = UDim2.new(0, 140, 0, 15), -- Сдвинуто вправо на ширину LeftPanel
-        Size = UDim2.new(1, -155, 1, -30),
+        Position = UDim2.new(0, 150, 0, 0), -- Начинается ровно после левой панели
+        Size = UDim2.new(1, -150, 1, 0),
         ZIndex = 2;
         Parent = Outer;
     });
@@ -3038,34 +3040,33 @@ function Library:CreateWindow(...)
         WindowLabel.Text = Title;
     end;
 
+    -- === 4. ЛОГИКА ДОБАВЛЕНИЯ ТАБОВ ===
     function Window:AddTab(Name)
         local Tab = {
             Groupboxes = {};
             Tabboxes = {};
         };
 
-        -- Создаем саму кнопку таба (теперь фиксированная высота 32 пикселя)
+        -- Кнопка вкладки
         local TabButton = Library:Create('Frame', {
-            BackgroundColor3 = Library.AccentColor, -- Цвет выделения
-            BackgroundTransparency = 1, -- Изначально прозрачная (невидимая)
+            BackgroundColor3 = Library.AccentColor,
+            BackgroundTransparency = 1,
             BorderSizePixel = 0,
-            Size = UDim2.new(1, 0, 0, 32), -- Ширина 100% панели, высота 32px
+            Size = UDim2.new(1, 0, 0, 32), -- ФИКСИРОВАННАЯ ВЫСОТА 32px (Больше не растянется!)
             ZIndex = 1,
             Parent = TabArea;
         });
 
-        -- Скругление кнопки таба
         Library:Create('UICorner', {
             CornerRadius = UDim.new(0, 6),
             Parent = TabButton
-        })
+        });
 
-        -- Текст внутри таба
         local TabButtonLabel = Library:CreateLabel({
-            Position = UDim2.new(0, 12, 0, 0), -- Отступ слева, чтобы текст не прилипал к краю
+            Position = UDim2.new(0, 12, 0, 0),
             Size = UDim2.new(1, -12, 1, 0),
             Text = Name,
-            Font = Enum.Font.GothamMedium, -- Более современный шрифт
+            Font = Enum.Font.GothamMedium,
             TextSize = 14,
             TextXAlignment = Enum.TextXAlignment.Left,
             TextColor3 = Library.FontColor,
@@ -3073,7 +3074,6 @@ function Library:CreateWindow(...)
             Parent = TabButton;
         });
 
-        -- Контейнер для содержимого этой вкладки
         local TabFrame = Library:Create('Frame', {
             Name = 'TabFrame',
             BackgroundTransparency = 1;
@@ -3084,36 +3084,32 @@ function Library:CreateWindow(...)
             Parent = TabContainer;
         });
 
-        -- Левая колонка для Группбоксов
         local LeftSide = Library:Create('ScrollingFrame', {
             BackgroundTransparency = 1;
             BorderSizePixel = 0;
-            Position = UDim2.new(0, 0, 0, 0);
-            Size = UDim2.new(0.5, -6, 1, 0); -- Занимает 50% ширины минус отступ
+            Position = UDim2.new(0, 15, 0, 15);
+            Size = UDim2.new(0.5, -22, 1, -30);
             CanvasSize = UDim2.new(0, 0, 0, 0);
-            BottomImage = '';
-            TopImage = '';
-            ScrollBarThickness = 0; -- Прячем ползунок скролла для чистоты
+            BottomImage = ''; TopImage = '';
+            ScrollBarThickness = 0;
             ZIndex = 2;
             Parent = TabFrame;
         });
 
-        -- Правая колонка для Группбоксов
         local RightSide = Library:Create('ScrollingFrame', {
             BackgroundTransparency = 1;
             BorderSizePixel = 0;
-            Position = UDim2.new(0.5, 6, 0, 0);
-            Size = UDim2.new(0.5, -6, 1, 0);
+            Position = UDim2.new(0.5, 7, 0, 15);
+            Size = UDim2.new(0.5, -22, 1, -30);
             CanvasSize = UDim2.new(0, 0, 0, 0);
-            BottomImage = '';
-            TopImage = '';
+            BottomImage = ''; TopImage = '';
             ScrollBarThickness = 0;
             ZIndex = 2;
             Parent = TabFrame;
         });
 
         Library:Create('UIListLayout', {
-            Padding = UDim.new(0, 12); -- Расстояние между группбоксами
+            Padding = UDim.new(0, 15);
             FillDirection = Enum.FillDirection.Vertical;
             SortOrder = Enum.SortOrder.LayoutOrder;
             HorizontalAlignment = Enum.HorizontalAlignment.Center;
@@ -3121,7 +3117,7 @@ function Library:CreateWindow(...)
         });
 
         Library:Create('UIListLayout', {
-            Padding = UDim.new(0, 12);
+            Padding = UDim.new(0, 15);
             FillDirection = Enum.FillDirection.Vertical;
             SortOrder = Enum.SortOrder.LayoutOrder;
             HorizontalAlignment = Enum.HorizontalAlignment.Center;
@@ -3130,29 +3126,29 @@ function Library:CreateWindow(...)
 
         for _, Side in next, { LeftSide, RightSide } do
             Side:WaitForChild('UIListLayout'):GetPropertyChangedSignal('AbsoluteContentSize'):Connect(function()
-                Side.CanvasSize = UDim2.fromOffset(0, Side.UIListLayout.AbsoluteContentSize.Y + 20); -- +20px снизу, чтобы не обрезалось
+                Side.CanvasSize = UDim2.fromOffset(0, Side.UIListLayout.AbsoluteContentSize.Y);
             end);
         end;
 
-        -- Логика переключения табов (Дизайн Kamidere)
         function Tab:ShowTab()
             for _, Tab in next, Window.Tabs do
                 Tab:HideTab();
             end;
-
-            -- Делаем фон кнопки полупрозрачным и красим текст в акцентный цвет
+            
+            -- Выделение выбранного таба (Камидере стиль)
             TabButton.BackgroundTransparency = 0.85; 
             TabButtonLabel.TextColor3 = Library.AccentColor;
             
+            if not Library.RegistryMap[TabButtonLabel] then Library.RegistryMap[TabButtonLabel] = {Properties={}} end
             Library.RegistryMap[TabButtonLabel].Properties.TextColor3 = 'AccentColor';
             TabFrame.Visible = true;
         end;
 
         function Tab:HideTab()
-            -- Возвращаем в дефолт (невидимый фон, белый текст)
             TabButton.BackgroundTransparency = 1;
             TabButtonLabel.TextColor3 = Library.FontColor;
             
+            if not Library.RegistryMap[TabButtonLabel] then Library.RegistryMap[TabButtonLabel] = {Properties={}} end
             Library.RegistryMap[TabButtonLabel].Properties.TextColor3 = 'FontColor';
             TabFrame.Visible = false;
         end;
@@ -3161,6 +3157,20 @@ function Library:CreateWindow(...)
             TabButton.LayoutOrder = Position;
             TabListLayout:ApplyLayout();
         end;
+
+        TabButton.InputBegan:Connect(function(Input)
+            if Input.UserInputType == Enum.UserInputType.MouseButton1 then
+                Tab:ShowTab();
+            end;
+        end);
+
+        if #TabContainer:GetChildren() == 1 then
+            Tab:ShowTab();
+        end;
+
+        Window.Tabs[Name] = Tab;
+        return Tab;
+    end;
 
         function Tab:AddGroupbox(Info)
             local Groupbox = {};
