@@ -3044,43 +3044,36 @@ function Library:CreateWindow(...)
             Tabboxes = {};
         };
 
-        local TabButtonWidth = Library:GetTextBounds(Name, Library.Font, 16);
-
+        -- Создаем саму кнопку таба (теперь фиксированная высота 32 пикселя)
         local TabButton = Library:Create('Frame', {
-            BackgroundColor3 = Library.BackgroundColor;
-            BorderColor3 = Library.OutlineColor;
-            Size = UDim2.new(0, TabButtonWidth + 8 + 4, 1, 0);
-            ZIndex = 1;
+            BackgroundColor3 = Library.AccentColor, -- Цвет выделения
+            BackgroundTransparency = 1, -- Изначально прозрачная (невидимая)
+            BorderSizePixel = 0,
+            Size = UDim2.new(1, 0, 0, 32), -- Ширина 100% панели, высота 32px
+            ZIndex = 1,
             Parent = TabArea;
         });
 
-        Library:AddToRegistry(TabButton, {
-            BackgroundColor3 = 'BackgroundColor';
-            BorderColor3 = 'OutlineColor';
-        });
+        -- Скругление кнопки таба
+        Library:Create('UICorner', {
+            CornerRadius = UDim.new(0, 6),
+            Parent = TabButton
+        })
 
+        -- Текст внутри таба
         local TabButtonLabel = Library:CreateLabel({
-            Position = UDim2.new(0, 0, 0, 0);
-            Size = UDim2.new(1, 0, 1, -1);
-            Text = Name;
-            ZIndex = 1;
+            Position = UDim2.new(0, 12, 0, 0), -- Отступ слева, чтобы текст не прилипал к краю
+            Size = UDim2.new(1, -12, 1, 0),
+            Text = Name,
+            Font = Enum.Font.GothamMedium, -- Более современный шрифт
+            TextSize = 14,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            TextColor3 = Library.FontColor,
+            ZIndex = 2,
             Parent = TabButton;
         });
 
-        local Blocker = Library:Create('Frame', {
-            BackgroundColor3 = Library.MainColor;
-            BorderSizePixel = 0;
-            Position = UDim2.new(0, 0, 1, 0);
-            Size = UDim2.new(1, 0, 0, 1);
-            BackgroundTransparency = 1;
-            ZIndex = 3;
-            Parent = TabButton;
-        });
-
-        Library:AddToRegistry(Blocker, {
-            BackgroundColor3 = 'MainColor';
-        });
-
+        -- Контейнер для содержимого этой вкладки
         local TabFrame = Library:Create('Frame', {
             Name = 'TabFrame',
             BackgroundTransparency = 1;
@@ -3091,24 +3084,26 @@ function Library:CreateWindow(...)
             Parent = TabContainer;
         });
 
+        -- Левая колонка для Группбоксов
         local LeftSide = Library:Create('ScrollingFrame', {
             BackgroundTransparency = 1;
             BorderSizePixel = 0;
-            Position = UDim2.new(0, 8 - 1, 0, 8 - 1);
-            Size = UDim2.new(0.5, -12 + 2, 0, 507 + 2);
+            Position = UDim2.new(0, 0, 0, 0);
+            Size = UDim2.new(0.5, -6, 1, 0); -- Занимает 50% ширины минус отступ
             CanvasSize = UDim2.new(0, 0, 0, 0);
             BottomImage = '';
             TopImage = '';
-            ScrollBarThickness = 0;
+            ScrollBarThickness = 0; -- Прячем ползунок скролла для чистоты
             ZIndex = 2;
             Parent = TabFrame;
         });
 
+        -- Правая колонка для Группбоксов
         local RightSide = Library:Create('ScrollingFrame', {
             BackgroundTransparency = 1;
             BorderSizePixel = 0;
-            Position = UDim2.new(0.5, 4 + 1, 0, 8 - 1);
-            Size = UDim2.new(0.5, -12 + 2, 0, 507 + 2);
+            Position = UDim2.new(0.5, 6, 0, 0);
+            Size = UDim2.new(0.5, -6, 1, 0);
             CanvasSize = UDim2.new(0, 0, 0, 0);
             BottomImage = '';
             TopImage = '';
@@ -3118,7 +3113,7 @@ function Library:CreateWindow(...)
         });
 
         Library:Create('UIListLayout', {
-            Padding = UDim.new(0, 8);
+            Padding = UDim.new(0, 12); -- Расстояние между группбоксами
             FillDirection = Enum.FillDirection.Vertical;
             SortOrder = Enum.SortOrder.LayoutOrder;
             HorizontalAlignment = Enum.HorizontalAlignment.Center;
@@ -3126,7 +3121,7 @@ function Library:CreateWindow(...)
         });
 
         Library:Create('UIListLayout', {
-            Padding = UDim.new(0, 8);
+            Padding = UDim.new(0, 12);
             FillDirection = Enum.FillDirection.Vertical;
             SortOrder = Enum.SortOrder.LayoutOrder;
             HorizontalAlignment = Enum.HorizontalAlignment.Center;
@@ -3135,25 +3130,30 @@ function Library:CreateWindow(...)
 
         for _, Side in next, { LeftSide, RightSide } do
             Side:WaitForChild('UIListLayout'):GetPropertyChangedSignal('AbsoluteContentSize'):Connect(function()
-                Side.CanvasSize = UDim2.fromOffset(0, Side.UIListLayout.AbsoluteContentSize.Y);
+                Side.CanvasSize = UDim2.fromOffset(0, Side.UIListLayout.AbsoluteContentSize.Y + 20); -- +20px снизу, чтобы не обрезалось
             end);
         end;
 
+        -- Логика переключения табов (Дизайн Kamidere)
         function Tab:ShowTab()
             for _, Tab in next, Window.Tabs do
                 Tab:HideTab();
             end;
 
-            Blocker.BackgroundTransparency = 0;
-            TabButton.BackgroundColor3 = Library.MainColor;
-            Library.RegistryMap[TabButton].Properties.BackgroundColor3 = 'MainColor';
+            -- Делаем фон кнопки полупрозрачным и красим текст в акцентный цвет
+            TabButton.BackgroundTransparency = 0.85; 
+            TabButtonLabel.TextColor3 = Library.AccentColor;
+            
+            Library.RegistryMap[TabButtonLabel].Properties.TextColor3 = 'AccentColor';
             TabFrame.Visible = true;
         end;
 
         function Tab:HideTab()
-            Blocker.BackgroundTransparency = 1;
-            TabButton.BackgroundColor3 = Library.BackgroundColor;
-            Library.RegistryMap[TabButton].Properties.BackgroundColor3 = 'BackgroundColor';
+            -- Возвращаем в дефолт (невидимый фон, белый текст)
+            TabButton.BackgroundTransparency = 1;
+            TabButtonLabel.TextColor3 = Library.FontColor;
+            
+            Library.RegistryMap[TabButtonLabel].Properties.TextColor3 = 'FontColor';
             TabFrame.Visible = false;
         end;
 
