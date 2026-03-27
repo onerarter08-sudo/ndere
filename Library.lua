@@ -2943,12 +2943,12 @@ function Library:CreateWindow(...)
         Config.AutoShow = Arguments[2] or false;
     end
 
-    if type(Config.Title) ~= 'string' then Config.Title = 'No title' end
-    if type(Config.TabPadding) ~= 'number' then Config.TabPadding = 0 end
+    if type(Config.Title) ~= 'string' then Config.Title = 'KAMIDERE' end
+    if type(Config.TabPadding) ~= 'number' then Config.TabPadding = 5 end
     if type(Config.MenuFadeTime) ~= 'number' then Config.MenuFadeTime = 0.2 end
 
     if typeof(Config.Position) ~= 'UDim2' then Config.Position = UDim2.fromOffset(175, 50) end
-    if typeof(Config.Size) ~= 'UDim2' then Config.Size = UDim2.fromOffset(550, 600) end
+    if typeof(Config.Size) ~= 'UDim2' then Config.Size = UDim2.fromOffset(650, 500) end -- Сделали чуть шире под левую панель
 
     if Config.Center then
         Config.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -2959,10 +2959,11 @@ function Library:CreateWindow(...)
         Tabs = {};
     };
 
+    -- Главный фон окна
     local Outer = Library:Create('Frame', {
         AnchorPoint = Config.AnchorPoint,
-        BackgroundColor3 = Color3.new(0, 0, 0);
-        BorderSizePixel = 0;
+        BackgroundColor3 = Library.BackgroundColor, -- Темный фон
+        BorderSizePixel = 0,
         Position = Config.Position,
         Size = Config.Size,
         Visible = false;
@@ -2970,88 +2971,67 @@ function Library:CreateWindow(...)
         Parent = ScreenGui;
     });
 
+    -- Скругление главного окна
+    Library:Create('UICorner', {
+        CornerRadius = UDim.new(0, 8),
+        Parent = Outer
+    })
+
     Library:MakeDraggable(Outer, 25);
 
-    local Inner = Library:Create('Frame', {
-        BackgroundColor3 = Library.MainColor;
-        BorderColor3 = Library.AccentColor;
-        BorderMode = Enum.BorderMode.Inset;
-        Position = UDim2.new(0, 1, 0, 1);
-        Size = UDim2.new(1, -2, 1, -2);
-        ZIndex = 1;
+    -- Левая панель (для табов)
+    local LeftPanel = Library:Create('Frame', {
+        BackgroundColor3 = Library.MainColor,
+        BackgroundTransparency = 1, -- Делаем прозрачной, чтобы сливалась с фоном
+        BorderSizePixel = 0,
+        Position = UDim2.new(0, 0, 0, 0),
+        Size = UDim2.new(0, 140, 1, 0), -- Ширина 140 пикселей, высота на всё окно
+        ZIndex = 2,
         Parent = Outer;
     });
 
-    Library:AddToRegistry(Inner, {
-        BackgroundColor3 = 'MainColor';
-        BorderColor3 = 'AccentColor';
-    });
-
+    -- Название софта (KAMIDERE) в левом верхнем углу
     local WindowLabel = Library:CreateLabel({
-        Position = UDim2.new(0, 7, 0, 0);
-        Size = UDim2.new(0, 0, 0, 25);
-        Text = Config.Title or '';
-        TextXAlignment = Enum.TextXAlignment.Left;
-        ZIndex = 1;
-        Parent = Inner;
+        Position = UDim2.new(0, 15, 0, 15),
+        Size = UDim2.new(1, -30, 0, 20),
+        Text = Config.Title,
+        Font = Enum.Font.GothamBold, -- Жирный современный шрифт
+        TextSize = 16,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        TextColor3 = Library.AccentColor, -- Цвет текста - акцентный
+        ZIndex = 3;
+        Parent = LeftPanel;
     });
 
-    local MainSectionOuter = Library:Create('Frame', {
-        BackgroundColor3 = Library.BackgroundColor;
-        BorderColor3 = Library.OutlineColor;
-        Position = UDim2.new(0, 8, 0, 25);
-        Size = UDim2.new(1, -16, 1, -33);
-        ZIndex = 1;
-        Parent = Inner;
+    Library:AddToRegistry(WindowLabel, {
+        TextColor3 = 'AccentColor';
     });
 
-    Library:AddToRegistry(MainSectionOuter, {
-        BackgroundColor3 = 'BackgroundColor';
-        BorderColor3 = 'OutlineColor';
-    });
-
-    local MainSectionInner = Library:Create('Frame', {
-        BackgroundColor3 = Library.BackgroundColor;
-        BorderColor3 = Color3.new(0, 0, 0);
-        BorderMode = Enum.BorderMode.Inset;
-        Position = UDim2.new(0, 0, 0, 0);
-        Size = UDim2.new(1, 0, 1, 0);
-        ZIndex = 1;
-        Parent = MainSectionOuter;
-    });
-
-    Library:AddToRegistry(MainSectionInner, {
-        BackgroundColor3 = 'BackgroundColor';
-    });
-
+    -- Зона, где будут списком лежать сами табы (кнопки)
     local TabArea = Library:Create('Frame', {
         BackgroundTransparency = 1;
-        Position = UDim2.new(0, 8, 0, 8);
-        Size = UDim2.new(1, -16, 0, 21);
-        ZIndex = 1;
-        Parent = MainSectionInner;
+        Position = UDim2.new(0, 10, 0, 50); -- Отступ сверху после названия
+        Size = UDim2.new(1, -20, 1, -60);
+        ZIndex = 3;
+        Parent = LeftPanel;
     });
 
     local TabListLayout = Library:Create('UIListLayout', {
         Padding = UDim.new(0, Config.TabPadding);
-        FillDirection = Enum.FillDirection.Horizontal;
+        FillDirection = Enum.FillDirection.Vertical; -- ВАЖНО: Теперь табы идут сверху вниз!
         SortOrder = Enum.SortOrder.LayoutOrder;
         Parent = TabArea;
     });
 
+    -- Правая панель (для контента/группбоксов)
     local TabContainer = Library:Create('Frame', {
-        BackgroundColor3 = Library.MainColor;
-        BorderColor3 = Library.OutlineColor;
-        Position = UDim2.new(0, 8, 0, 30);
-        Size = UDim2.new(1, -16, 1, -38);
+        BackgroundColor3 = Library.BackgroundColor,
+        BackgroundTransparency = 1,
+        BorderSizePixel = 0,
+        Position = UDim2.new(0, 140, 0, 15), -- Сдвинуто вправо на ширину LeftPanel
+        Size = UDim2.new(1, -155, 1, -30),
         ZIndex = 2;
-        Parent = MainSectionInner;
-    });
-    
-
-    Library:AddToRegistry(TabContainer, {
-        BackgroundColor3 = 'MainColor';
-        BorderColor3 = 'OutlineColor';
+        Parent = Outer;
     });
 
     function Window:SetWindowTitle(Title)
