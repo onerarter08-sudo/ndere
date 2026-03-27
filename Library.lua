@@ -2946,75 +2946,62 @@ function Library:CreateWindow(...)
     if type(Config.Title) ~= 'string' then Config.Title = 'KAMIDERE' end
     if type(Config.MenuFadeTime) ~= 'number' then Config.MenuFadeTime = 0.2 end
     if typeof(Config.Position) ~= 'UDim2' then Config.Position = UDim2.fromOffset(175, 50) end
-    if typeof(Config.Size) ~= 'UDim2' then Config.Size = UDim2.fromOffset(620, 500) end
+    if typeof(Config.Size) ~= 'UDim2' then Config.Size = UDim2.fromOffset(650, 520) end
 
     if Config.Center then
         Config.AnchorPoint = Vector2.new(0.5, 0.5)
         Config.Position = UDim2.fromScale(0.5, 0.5)
     end
 
-    local Window = {
-        Tabs = {};
-    };
+    local Window = { Tabs = {} };
 
-    -- === 1. ГЛАВНОЕ ОКНО ===
+    -- === 1. ГЛАВНОЕ ОКНО (ЕДИНЫЙ ФОН) ===
     local Outer = Library:Create('Frame', {
         AnchorPoint = Config.AnchorPoint,
-        BackgroundColor3 = Library.BackgroundColor,
+        BackgroundColor3 = Library.BackgroundColor, -- Темный фон для всего окна!
         BorderSizePixel = 0,
         Position = Config.Position,
         Size = Config.Size,
         Visible = false;
         ZIndex = 1;
         Parent = ScreenGui;
-        ClipsDescendants = true; -- МАГИЯ ЗДЕСЬ: Ничего не вылезет за края скруглений!
     });
 
+    -- Скругление теперь работает идеально, потому что внутри нет цветных блоков
     Library:Create('UICorner', {
-        CornerRadius = UDim.new(0, 6),
+        CornerRadius = UDim.new(0, 8),
         Parent = Outer
     });
 
-    Library:MakeDraggable(Outer, 30);
+    Library:MakeDraggable(Outer, 40);
 
-    -- === 2. ЛЕВАЯ ПАНЕЛЬ (ТАБЫ) ===
+    -- Надпись KAMIDERE в ПРАВОМ верхнем углу (как на скрине)
+    local WindowLabel = Library:CreateLabel({
+        Position = UDim2.new(1, -215, 0, 10),
+        Size = UDim2.new(0, 200, 0, 20),
+        Text = Config.Title,
+        Font = Enum.Font.GothamBold,
+        TextSize = 13,
+        TextXAlignment = Enum.TextXAlignment.Right,
+        TextColor3 = Color3.fromRGB(100, 100, 100), -- Тусклый цвет, чтобы не резало глаза
+        ZIndex = 3;
+        Parent = Outer;
+    });
+
+    -- === 2. ЛЕВАЯ ПАНЕЛЬ (ПРОЗРАЧНАЯ) ===
     local LeftPanel = Library:Create('Frame', {
-        BackgroundColor3 = Library.MainColor, -- Цвет левой менюшки
+        BackgroundTransparency = 1, -- Убрали цвет! Теперь она сливается с главным фоном
         BorderSizePixel = 0,
         Position = UDim2.new(0, 0, 0, 0),
-        Size = UDim2.new(0, 150, 1, 0), -- Ширина 150px
+        Size = UDim2.new(0, 150, 1, 0),
         ZIndex = 2,
         Parent = Outer;
     });
 
-    -- Линия-разделитель (как в Kamidere)
-    local Divider = Library:Create('Frame', {
-        BackgroundColor3 = Library.OutlineColor,
-        BorderSizePixel = 0,
-        Position = UDim2.new(1, -1, 0, 0),
-        Size = UDim2.new(0, 1, 1, 0),
-        ZIndex = 3,
-        Parent = LeftPanel;
-    });
-
-    local WindowLabel = Library:CreateLabel({
-        Position = UDim2.new(0, 15, 0, 15),
-        Size = UDim2.new(1, -30, 0, 20),
-        Text = Config.Title,
-        Font = Enum.Font.GothamBold,
-        TextSize = 16,
-        TextXAlignment = Enum.TextXAlignment.Left,
-        TextColor3 = Library.AccentColor,
-        ZIndex = 3;
-        Parent = LeftPanel;
-    });
-
-    Library:AddToRegistry(WindowLabel, { TextColor3 = 'AccentColor' });
-
     local TabArea = Library:Create('Frame', {
         BackgroundTransparency = 1;
-        Position = UDim2.new(0, 10, 0, 50);
-        Size = UDim2.new(1, -20, 1, -60);
+        Position = UDim2.new(0, 15, 0, 30);
+        Size = UDim2.new(1, -30, 1, -40);
         ZIndex = 3;
         Parent = LeftPanel;
     });
@@ -3030,7 +3017,7 @@ function Library:CreateWindow(...)
     local TabContainer = Library:Create('Frame', {
         BackgroundTransparency = 1;
         BorderSizePixel = 0,
-        Position = UDim2.new(0, 150, 0, 0), -- Начинается ровно после левой панели
+        Position = UDim2.new(0, 150, 0, 0),
         Size = UDim2.new(1, -150, 1, 0),
         ZIndex = 2;
         Parent = Outer;
@@ -3040,36 +3027,40 @@ function Library:CreateWindow(...)
         WindowLabel.Text = Title;
     end;
 
-    -- === 4. ЛОГИКА ДОБАВЛЕНИЯ ТАБОВ ===
+    -- === 4. ТАБЫ (СТИЛЬ КАМИДЕРЕ) ===
     function Window:AddTab(Name)
-        local Tab = {
-            Groupboxes = {};
-            Tabboxes = {};
-        };
+        local Tab = { Groupboxes = {}, Tabboxes = {} };
 
-        -- Кнопка вкладки
         local TabButton = Library:Create('Frame', {
-            BackgroundColor3 = Library.AccentColor,
-            BackgroundTransparency = 1,
+            BackgroundTransparency = 1, -- Кнопки тоже прозрачные
             BorderSizePixel = 0,
-            Size = UDim2.new(1, 0, 0, 32), -- ФИКСИРОВАННАЯ ВЫСОТА 32px (Больше не растянется!)
+            Size = UDim2.new(1, 0, 0, 30),
             ZIndex = 1,
             Parent = TabArea;
         });
 
-        Library:Create('UICorner', {
-            CornerRadius = UDim.new(0, 6),
-            Parent = TabButton
+        -- Та самая полосочка слева при выборе таба!
+        local TabHighlight = Library:Create('Frame', {
+            BackgroundColor3 = Library.AccentColor,
+            BorderSizePixel = 0,
+            Position = UDim2.new(0, 0, 0.5, -8),
+            Size = UDim2.new(0, 2, 0, 16),
+            Visible = false, -- Скрыта, пока таб не выбран
+            ZIndex = 2,
+            Parent = TabButton;
         });
+        
+        Library:Create('UICorner', { CornerRadius = UDim.new(0, 2), Parent = TabHighlight });
+        Library:AddToRegistry(TabHighlight, { BackgroundColor3 = 'AccentColor' });
 
         local TabButtonLabel = Library:CreateLabel({
             Position = UDim2.new(0, 12, 0, 0),
             Size = UDim2.new(1, -12, 1, 0),
             Text = Name,
             Font = Enum.Font.GothamMedium,
-            TextSize = 14,
+            TextSize = 13,
             TextXAlignment = Enum.TextXAlignment.Left,
-            TextColor3 = Library.FontColor,
+            TextColor3 = Color3.fromRGB(130, 130, 130),
             ZIndex = 2,
             Parent = TabButton;
         });
@@ -3087,8 +3078,8 @@ function Library:CreateWindow(...)
         local LeftSide = Library:Create('ScrollingFrame', {
             BackgroundTransparency = 1;
             BorderSizePixel = 0;
-            Position = UDim2.new(0, 15, 0, 15);
-            Size = UDim2.new(0.5, -22, 1, -30);
+            Position = UDim2.new(0, 5, 0, 35); -- Сдвинули вниз из-за вотермарки
+            Size = UDim2.new(0.5, -12, 1, -45);
             CanvasSize = UDim2.new(0, 0, 0, 0);
             BottomImage = ''; TopImage = '';
             ScrollBarThickness = 0;
@@ -3099,8 +3090,8 @@ function Library:CreateWindow(...)
         local RightSide = Library:Create('ScrollingFrame', {
             BackgroundTransparency = 1;
             BorderSizePixel = 0;
-            Position = UDim2.new(0.5, 7, 0, 15);
-            Size = UDim2.new(0.5, -22, 1, -30);
+            Position = UDim2.new(0.5, 7, 0, 35);
+            Size = UDim2.new(0.5, -12, 1, -45);
             CanvasSize = UDim2.new(0, 0, 0, 0);
             BottomImage = ''; TopImage = '';
             ScrollBarThickness = 0;
@@ -3109,7 +3100,7 @@ function Library:CreateWindow(...)
         });
 
         Library:Create('UIListLayout', {
-            Padding = UDim.new(0, 15);
+            Padding = UDim.new(0, 10);
             FillDirection = Enum.FillDirection.Vertical;
             SortOrder = Enum.SortOrder.LayoutOrder;
             HorizontalAlignment = Enum.HorizontalAlignment.Center;
@@ -3117,7 +3108,7 @@ function Library:CreateWindow(...)
         });
 
         Library:Create('UIListLayout', {
-            Padding = UDim.new(0, 15);
+            Padding = UDim.new(0, 10);
             FillDirection = Enum.FillDirection.Vertical;
             SortOrder = Enum.SortOrder.LayoutOrder;
             HorizontalAlignment = Enum.HorizontalAlignment.Center;
@@ -3131,25 +3122,23 @@ function Library:CreateWindow(...)
         end;
 
         function Tab:ShowTab()
-            for _, Tab in next, Window.Tabs do
-                Tab:HideTab();
-            end;
+            for _, Tab in next, Window.Tabs do Tab:HideTab() end;
             
-            -- Выделение выбранного таба (Камидере стиль)
-            TabButton.BackgroundTransparency = 0.85; 
-            TabButtonLabel.TextColor3 = Library.AccentColor;
+            TabHighlight.Visible = true;
+            TabButtonLabel.TextColor3 = Library.FontColor; -- Активный таб становится белым
             
             if not Library.RegistryMap[TabButtonLabel] then Library.RegistryMap[TabButtonLabel] = {Properties={}} end
-            Library.RegistryMap[TabButtonLabel].Properties.TextColor3 = 'AccentColor';
+            Library.RegistryMap[TabButtonLabel].Properties.TextColor3 = 'FontColor';
             TabFrame.Visible = true;
         end;
 
         function Tab:HideTab()
-            TabButton.BackgroundTransparency = 1;
-            TabButtonLabel.TextColor3 = Library.FontColor;
+            TabHighlight.Visible = false;
+            TabButtonLabel.TextColor3 = Color3.fromRGB(130, 130, 130); -- Тусклый текст у неактивных
             
-            if not Library.RegistryMap[TabButtonLabel] then Library.RegistryMap[TabButtonLabel] = {Properties={}} end
-            Library.RegistryMap[TabButtonLabel].Properties.TextColor3 = 'FontColor';
+            if Library.RegistryMap[TabButtonLabel] then
+                Library.RegistryMap[TabButtonLabel].Properties.TextColor3 = nil;
+            end
             TabFrame.Visible = false;
         end;
 
@@ -3157,6 +3146,81 @@ function Library:CreateWindow(...)
             TabButton.LayoutOrder = Position;
             TabListLayout:ApplyLayout();
         end;
+
+        TabButton.InputBegan:Connect(function(Input)
+            if Input.UserInputType == Enum.UserInputType.MouseButton1 then Tab:ShowTab() end;
+        end);
+
+        if #TabContainer:GetChildren() == 1 then Tab:ShowTab() end;
+
+        Window.Tabs[Name] = Tab;
+        return Tab;
+    end;
+
+    -- === 5. ГРУППБОКСЫ (БЕЗ ЛИНИЙ И РАМОК) ===
+    function Tab:AddGroupbox(Info)
+        local Groupbox = {};
+
+        local BoxOuter = Library:Create('Frame', {
+            BackgroundColor3 = Library.MainColor, -- Чуть светлее главного фона
+            BorderSizePixel = 0,
+            Size = UDim2.new(1, 0, 0, 507),
+            ZIndex = 2,
+            Parent = Info.Side == 1 and LeftSide or RightSide;
+        });
+
+        Library:Create('UICorner', {
+            CornerRadius = UDim.new(0, 6),
+            Parent = BoxOuter
+        });
+
+        Library:AddToRegistry(BoxOuter, { BackgroundColor3 = 'MainColor' });
+
+        local GroupboxLabel = Library:CreateLabel({
+            Size = UDim2.new(1, 0, 0, 18),
+            Position = UDim2.new(0, 12, 0, 8),
+            TextSize = 13,
+            Text = Info.Name,
+            Font = Enum.Font.GothamMedium,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            TextColor3 = Color3.fromRGB(150, 150, 150), -- Текст заголовка неброский
+            ZIndex = 5,
+            Parent = BoxOuter;
+        });
+
+        local Container = Library:Create('Frame', {
+            BackgroundTransparency = 1,
+            Position = UDim2.new(0, 12, 0, 32),
+            Size = UDim2.new(1, -24, 1, -32),
+            ZIndex = 1,
+            Parent = BoxOuter;
+        });
+
+        Library:Create('UIListLayout', {
+            Padding = UDim.new(0, 4);
+            FillDirection = Enum.FillDirection.Vertical,
+            SortOrder = Enum.SortOrder.LayoutOrder,
+            Parent = Container;
+        });
+
+        function Groupbox:Resize()
+            local Size = 0;
+            for _, Element in next, Groupbox.Container:GetChildren() do
+                if (not Element:IsA('UIListLayout')) and Element.Visible then
+                    Size = Size + Element.Size.Y.Offset + 4;
+                end;
+            end;
+            BoxOuter.Size = UDim2.new(1, 0, 0, 32 + Size + 8); 
+        end;
+
+        Groupbox.Container = Container;
+        setmetatable(Groupbox, BaseGroupbox);
+
+        Groupbox:Resize();
+        Tab.Groupboxes[Info.Name] = Groupbox;
+
+        return Groupbox;
+    end;
 
         function Tab:AddGroupbox(Info)
             local Groupbox = {};
