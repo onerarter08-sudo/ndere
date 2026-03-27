@@ -2968,7 +2968,7 @@ function Library:CreateWindow(...)
         Size = UDim2.new(0, 200, 0, 20),
         Text = Config.Title,
         Font = Enum.Font.Gotham,
-        TextSize = 14,
+        TextSize = 16,
         TextXAlignment = Enum.TextXAlignment.Right,
         TextColor3 = Color3.fromRGB(35, 35, 35), -- ЦВЕТ ТЕПЕРЬ ТЕМНО-СЕРЫЙ (почти сливается с фоном)
         ZIndex = 3;
