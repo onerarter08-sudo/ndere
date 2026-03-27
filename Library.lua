@@ -2970,10 +2970,13 @@ function Library:CreateWindow(...)
         Font = Enum.Font.Gotham,
         TextSize = 16,
         TextXAlignment = Enum.TextXAlignment.Right,
-        TextColor3 = Color3.fromRGB(35, 35, 35), -- ЦВЕТ ТЕПЕРЬ ТЕМНО-СЕРЫЙ (почти сливается с фоном)
+        TextColor3 = Library.MainColor, -- ЦВЕТ ТЕПЕРЬ ТЕМНО-СЕРЫЙ (почти сливается с фоном)
         ZIndex = 3;
         Parent = Outer;
     });
+
+    -- ПЕРЕВЯЗЫВАЕМ ЦВЕТ В РЕЕСТРЕ (чтобы ThemeManager не красил его в белый)
+    Library.RegistryMap[WindowLabel].Properties.TextColor3 = 'MainColor';
 
     -- ... дальше идет LeftPanel и остальной код
 
