@@ -133,14 +133,8 @@ function Library:Create(Class, Properties)
 end;
 
 function Library:ApplyTextStroke(Inst)
-    Inst.TextStrokeTransparency = 1;
-
-    Library:Create('UIStroke', {
-        Color = Color3.new(0, 0, 0);
-        Thickness = 1;
-        LineJoinMode = Enum.LineJoinMode.Miter;
-        Parent = Inst;
-    });
+    -- Мы просто оставляем эту функцию пустой!
+    -- Теперь никаких уродливых черных контуров (UIStroke) вокруг текста.
 end;
 
 function Library:CreateLabel(Properties, IsHud)
@@ -149,7 +143,7 @@ function Library:CreateLabel(Properties, IsHud)
         Font = Library.Font;
         TextColor3 = Library.FontColor;
         TextSize = 16;
-        TextStrokeTransparency = 0;
+        TextStrokeTransparency = 1; -- СТАВИМ 1, чтобы полностью убрать стандартную тень
     });
 
     Library:ApplyTextStroke(_Instance);
@@ -2946,7 +2940,7 @@ function Library:CreateWindow(...)
     if type(Config.Title) ~= 'string' then Config.Title = 'KAMIDERE' end
     if type(Config.MenuFadeTime) ~= 'number' then Config.MenuFadeTime = 0.2 end
     if typeof(Config.Position) ~= 'UDim2' then Config.Position = UDim2.fromOffset(175, 50) end
-    if typeof(Config.Size) ~= 'UDim2' then Config.Size = UDim2.fromOffset(650, 520) end
+    if typeof(Config.Size) ~= 'UDim2' then Config.Size = UDim2.fromOffset(740, 520) end -- ⬅️ УВЕЛИЧИЛИ ШИРИНУ ДО 740 (было 650)
 
     if Config.Center then
         Config.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -2974,12 +2968,14 @@ function Library:CreateWindow(...)
         Size = UDim2.new(0, 200, 0, 20),
         Text = Config.Title,
         Font = Enum.Font.GothamBold,
-        TextSize = 13,
+        TextSize = 14,
         TextXAlignment = Enum.TextXAlignment.Right,
-        TextColor3 = Color3.fromRGB(100, 100, 100),
+        TextColor3 = Color3.fromRGB(35, 35, 35), -- ЦВЕТ ТЕПЕРЬ ТЕМНО-СЕРЫЙ (почти сливается с фоном)
         ZIndex = 3;
         Parent = Outer;
     });
+
+    -- ... дальше идет LeftPanel и остальной код
 
     local LeftPanel = Library:Create('Frame', {
         BackgroundTransparency = 1,
