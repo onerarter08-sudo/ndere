@@ -37,7 +37,7 @@ local Library = {
     RiskColor = Color3.fromRGB(255, 50, 50),
 
     Black = Color3.new(0, 0, 0);
-    Font = Enum.Font.Code,
+    Font = Enum.Font.Gotham,
 
     OpenedFrames = {};
     DependencyBoxes = {};
@@ -2967,7 +2967,7 @@ function Library:CreateWindow(...)
         Position = UDim2.new(1, -215, 0, 10),
         Size = UDim2.new(0, 200, 0, 20),
         Text = Config.Title,
-        Font = Enum.Font.GothamBold,
+        Font = Enum.Font.Gotham,
         TextSize = 14,
         TextXAlignment = Enum.TextXAlignment.Right,
         TextColor3 = Color3.fromRGB(35, 35, 35), -- ЦВЕТ ТЕПЕРЬ ТЕМНО-СЕРЫЙ (почти сливается с фоном)
@@ -3041,7 +3041,7 @@ function Library:CreateWindow(...)
             Position = UDim2.new(0, 12, 0, 0),
             Size = UDim2.new(1, -12, 1, 0),
             Text = Name,
-            Font = Enum.Font.GothamMedium,
+            Font = Enum.Font.Gotham,
             TextSize = 13,
             TextXAlignment = Enum.TextXAlignment.Left,
             TextColor3 = Color3.fromRGB(130, 130, 130),
@@ -3146,7 +3146,7 @@ function Library:CreateWindow(...)
                 Position = UDim2.new(0, 12, 0, 8),
                 TextSize = 13,
                 Text = Info.Name,
-                Font = Enum.Font.GothamMedium,
+                Font = Enum.Font.Gotham,
                 TextXAlignment = Enum.TextXAlignment.Left,
                 TextColor3 = Color3.fromRGB(150, 150, 150),
                 ZIndex = 5,
@@ -3229,7 +3229,7 @@ function Library:CreateWindow(...)
                 local ButtonLabel = Library:CreateLabel({
                     Size = UDim2.new(1, 0, 1, 0),
                     TextSize = 13,
-                    Font = Enum.Font.GothamMedium,
+                    Font = Enum.Font.Gotham,
                     Text = Name,
                     TextXAlignment = Enum.TextXAlignment.Center,
                     ZIndex = 7,
