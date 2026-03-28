@@ -2803,15 +2803,12 @@ local TabButton = Library:Create('Frame', {
 
         -- Твоя розовая полоска справа
 local TabHighlight = Library:Create('Frame', {
-            BackgroundColor3 = Library.AccentColor, -- Вернули родной цвет темы
+            BackgroundColor3 = Library.AccentColor,
             BorderSizePixel = 0,
-            
-            -- ДВИГАЕМ ПРАВЕЕ: поставил -5. 
-            -- Если надо ЕЩЕ правее -> ставь -3, -1 или вообще 0.
-            Position = UDim2.new(1, -5, 0.5, -8), 
-            
-            -- Сделали обратно тонкой (ширина 2 пикселя вместо 10)
-            Size = UDim2.new(0, 2, 0, 16), 
+            -- Выталкиваем полоску вправо! 
+            -- Вместо отрицательного числа (-2) ставим положительное (например, 10 или 12)
+            Position = UDim2.new(1, 10, 0.5, -8), 
+            Size = UDim2.new(0, 2, 0, 16),
             Visible = false,
             ZIndex = 5,
             Parent = TabButton;
