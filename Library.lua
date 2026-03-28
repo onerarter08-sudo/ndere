@@ -2806,7 +2806,7 @@ local TabHighlight = Library:Create('Frame', {
             BorderSizePixel = 0,
             -- ПЕРЕШЛИ НА АБСОЛЮТНЫЕ ПИКСЕЛИ ОТ ЛЕВОГО КРАЯ:
             -- 0 (считаем слева), 149 (пикселей вправо), 0.5 (центр по высоте), -8 (смещение центра)
-            Position = UDim2.new(0, 144, 0.5, -8), 
+            Position = UDim2.new(0, 120, 0.5, -8), 
             Size = UDim2.new(0, 2, 0, 16),
             Visible = false,
             ZIndex = 5,
