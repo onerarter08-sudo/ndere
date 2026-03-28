@@ -2953,7 +2953,7 @@ if Library.RegistryMap[WindowLabel] then
         function Tab:AddLeftGroupbox(Name) return Tab:AddGroupbox({ Side = 1; Name = Name; }); end;
         function Tab:AddRightGroupbox(Name) return Tab:AddGroupbox({ Side = 2; Name = Name; }); end;
 
-        function Tab:AddTabbox(Info)
+function Tab:AddTabbox(Info)
             local Tabbox = { Tabs = {} };
             local BoxOuter = Library:Create('Frame', {
                 BackgroundColor3 = Library.MainColor,
@@ -2965,10 +2965,11 @@ if Library.RegistryMap[WindowLabel] then
             Library:Create('UICorner', { CornerRadius = UDim.new(0, 6), Parent = BoxOuter });
             Library:AddToRegistry(BoxOuter, { BackgroundColor3 = 'MainColor' });
 
+            -- Панель с кнопками таббоксов
             local TabboxButtons = Library:Create('Frame', {
                 BackgroundTransparency = 1,
                 Position = UDim2.new(0, 0, 0, 1),
-                Size = UDim2.new(1, 0, 0, 18),
+                Size = UDim2.new(1, 0, 0, 24), -- Сделал чуть выше, чтобы линия смотрелась красиво
                 ZIndex = 5,
                 Parent = BoxOuter;
             });
@@ -2982,29 +2983,48 @@ if Library.RegistryMap[WindowLabel] then
 
             function Tabbox:AddTab(Name)
                 local Tab = {};
+                
+                -- Кнопка теперь ВСЕГДА прозрачная, фон не меняется
                 local Button = Library:Create('Frame', {
-                    BackgroundColor3 = Library.MainColor,
+                    BackgroundTransparency = 1,
                     BorderSizePixel = 0,
                     Size = UDim2.new(0.5, 0, 1, 0),
                     ZIndex = 6,
                     Parent = TabboxButtons;
                 });
-                Library:AddToRegistry(Button, { BackgroundColor3 = 'MainColor' });
 
+                -- Текст кнопки
                 local ButtonLabel = Library:CreateLabel({
                     Size = UDim2.new(1, 0, 1, 0),
                     TextSize = 13,
-                    Font = Enum.Font.Gotham,
+                    Font = Enum.Font.GothamMedium,
                     Text = Name,
                     TextXAlignment = Enum.TextXAlignment.Center,
+                    TextColor3 = Library.FontColor,
                     ZIndex = 7,
                     Parent = Button;
                 });
 
+                -- Тонкая линия снизу (Underline), изначально скрыта
+                local Underline = Library:Create('Frame', {
+                    BackgroundColor3 = Library.AccentColor,
+                    BorderSizePixel = 0,
+                    AnchorPoint = Vector2.new(0.5, 0),
+                    Position = UDim2.new(0.5, 0, 1, -2), -- Прижата к низу, по центру
+                    Size = UDim2.new(0.6, 0, 0, 2), -- Занимает 60% ширины (выглядит очень стильно)
+                    Visible = false,
+                    ZIndex = 8,
+                    Parent = Button;
+                });
+                
+                Library:Create('UICorner', { CornerRadius = UDim.new(0, 4), Parent = Underline });
+                Library:AddToRegistry(Underline, { BackgroundColor3 = 'AccentColor' });
+
+                -- Контейнер для элементов внутри этого под-таба
                 local Container = Library:Create('Frame', {
                     BackgroundTransparency = 1,
-                    Position = UDim2.new(0, 4, 0, 20),
-                    Size = UDim2.new(1, -4, 1, -20),
+                    Position = UDim2.new(0, 4, 0, 28), -- Опустил контент чуть ниже
+                    Size = UDim2.new(1, -8, 1, -28),
                     ZIndex = 1,
                     Visible = false,
                     Parent = BoxOuter;
@@ -3013,39 +3033,53 @@ if Library.RegistryMap[WindowLabel] then
                 Library:Create('UIListLayout', {
                     FillDirection = Enum.FillDirection.Vertical,
                     SortOrder = Enum.SortOrder.LayoutOrder,
+                    Padding = UDim.new(0, 4), -- Добавил аккуратный отступ между элементами
                     Parent = Container;
                 });
 
                 function Tab:Show()
                     for _, Tab in next, Tabbox.Tabs do Tab:Hide() end;
                     Container.Visible = true;
-                    Button.BackgroundColor3 = Library.BackgroundColor;
-                    Library.RegistryMap[Button].Properties.BackgroundColor3 = 'BackgroundColor';
+                    
+                    -- Красим текст в цвет акцента и показываем линию
+                    ButtonLabel.TextColor3 = Library.AccentColor;
+                    if not Library.RegistryMap[ButtonLabel] then Library.RegistryMap[ButtonLabel] = {Properties={}} end
+                    Library.RegistryMap[ButtonLabel].Properties.TextColor3 = 'AccentColor';
+                    Underline.Visible = true;
+                    
                     Tab:Resize();
                 end;
 
                 function Tab:Hide()
                     Container.Visible = false;
-                    Button.BackgroundColor3 = Library.MainColor;
-                    Library.RegistryMap[Button].Properties.BackgroundColor3 = 'MainColor';
+                    
+                    -- Возвращаем текст в обычный белый и прячем линию
+                    ButtonLabel.TextColor3 = Library.FontColor;
+                    if not Library.RegistryMap[ButtonLabel] then Library.RegistryMap[ButtonLabel] = {Properties={}} end
+                    Library.RegistryMap[ButtonLabel].Properties.TextColor3 = 'FontColor';
+                    Underline.Visible = false;
                 end;
 
                 function Tab:Resize()
                     local TabCount = 0;
                     for _, Tab in next, Tabbox.Tabs do TabCount = TabCount + 1 end;
+                    
                     for _, Button in next, TabboxButtons:GetChildren() do
                         if not Button:IsA('UIListLayout') then
                             Button.Size = UDim2.new(1 / TabCount, 0, 1, 0);
                         end;
                     end;
+                    
                     if (not Container.Visible) then return end;
+                    
                     local Size = 0;
                     for _, Element in next, Tab.Container:GetChildren() do
                         if (not Element:IsA('UIListLayout')) and Element.Visible then
-                            Size = Size + Element.Size.Y.Offset;
+                            Size = Size + Element.Size.Y.Offset + 4; -- Учитываем Padding = 4
                         end;
                     end;
-                    BoxOuter.Size = UDim2.new(1, 0, 0, 20 + Size + 2 + 2);
+                    
+                    BoxOuter.Size = UDim2.new(1, 0, 0, 28 + Size + 6);
                 end;
 
                 Button.InputBegan:Connect(function(Input)
@@ -3057,7 +3091,7 @@ if Library.RegistryMap[WindowLabel] then
                 Tab.Container = Container;
                 Tabbox.Tabs[Name] = Tab;
                 setmetatable(Tab, BaseGroupbox);
-                Tab:AddBlank(3);
+                Tab:AddBlank(1);
                 Tab:Resize();
 
                 if #TabboxButtons:GetChildren() == 2 then Tab:Show() end;
