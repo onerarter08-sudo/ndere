@@ -2797,10 +2797,11 @@ local TabContainer = Library:Create('Frame', {
             Parent = TabArea;
         });
 
-        local TabHighlight = Library:Create('Frame', {
+local TabHighlight = Library:Create('Frame', {
             BackgroundColor3 = Library.AccentColor,
             BorderSizePixel = 0,
-            Position = UDim2.new(0, 0, 0.5, -8),
+            -- Position: 1 означает правый край (100%), -2 — это сдвиг влево на ширину самой полоски
+            Position = UDim2.new(1, -2, 0.5, -8), 
             Size = UDim2.new(0, 2, 0, 16),
             Visible = false,
             ZIndex = 2,
