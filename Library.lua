@@ -2786,86 +2786,66 @@ local TabContainer = Library:Create('Frame', {
         WindowLabel.Text = Title;
     end;
 
-function Window:AddTab(Name, Icon) -- Добавили аргумент Icon
+-- Теперь функция принимает второй аргумент: IconID (просто цифры)
+    function Window:AddTab(Name, IconID)
         local Tab = { Groupboxes = {}, Tabboxes = {} };
 
         local TabButton = Library:Create('Frame', {
             BackgroundTransparency = 1,
+            BackgroundColor3 = Library.MainColor,
             BorderSizePixel = 0,
-            Size = UDim2.new(1, 0, 0, 30),
-            ZIndex = 1,
+            Size = UDim2.new(1, -12, 0, 24),
+            ZIndex = 4,
             Parent = TabArea;
         });
+        Library:Create('UICorner', { CornerRadius = UDim.new(0, 4), Parent = TabButton });
+        Library:AddToRegistry(TabButton, { BackgroundColor3 = 'MainColor' });
 
-        -- Создаем саму иконку
-        local TabIcon = Library:Create('ImageLabel', {
-            BackgroundTransparency = 1,
-            Position = UDim2.new(0, 5, 0.5, -8), -- Слева с отступом 5px
-            Size = UDim2.new(0, 16, 0, 16),      -- Стандартный размер 16x16
-            Image = Icon or "",                  -- Если иконки нет, будет пусто
-            ImageColor3 = Color3.fromRGB(130, 130, 130), -- Серый цвет (как у текста)
-            Visible = (Icon ~= nil),             -- Скрываем, если иконка не передана
-            ZIndex = 2,
-            Parent = TabButton;
-        });
-
+        -- Твоя розовая полоска справа
         local TabHighlight = Library:Create('Frame', {
             BackgroundColor3 = Library.AccentColor,
             BorderSizePixel = 0,
-            Position = UDim2.new(1, -2, 0.5, -8), -- Твоя розовая полоска СПРАВА
+            Position = UDim2.new(1, -2, 0.5, -8),
             Size = UDim2.new(0, 2, 0, 16),
             Visible = false,
-            ZIndex = 2,
+            ZIndex = 5,
             Parent = TabButton;
         });
         Library:Create('UICorner', { CornerRadius = UDim.new(0, 2), Parent = TabHighlight });
         Library:AddToRegistry(TabHighlight, { BackgroundColor3 = 'AccentColor' });
 
+        -- === БЛОК ИКОНКИ ===
+        local HasIcon = (IconID ~= nil and IconID ~= "")
+        local TabIcon = nil
+
+        if HasIcon then
+            TabIcon = Library:Create('ImageLabel', {
+                BackgroundTransparency = 1,
+                Position = UDim2.new(0, 8, 0.5, -7), -- Ровно по центру слева
+                Size = UDim2.new(0, 14, 0, 14), -- Аккуратный размер иконки
+                -- Используем rbxthumb, чтобы жрало ЛЮБЫЕ айдишники:
+                Image = "rbxthumb://type=Asset&id=" .. tostring(IconID) .. "&w=150&h=150",
+                ImageColor3 = Color3.fromRGB(130, 130, 130), -- Серый цвет (неактивный)
+                ZIndex = 5,
+                Parent = TabButton;
+            });
+        end
+
+        -- === БЛОК ТЕКСТА ===
+        -- Если иконка есть, двигаем текст на 28px. Если нет - оставляем 12px.
+        local TextOffset = HasIcon and 28 or 12 
+
         local TabButtonLabel = Library:CreateLabel({
-            -- Если есть иконка, двигаем текст на 28px, если нет — оставляем 12px
-            Position = UDim2.new(0, (Icon and 28 or 12), 0, 0), 
-            Size = UDim2.new(1, -(Icon and 28 or 12), 1, 0),
+            Position = UDim2.new(0, TextOffset, 0, 0),
+            Size = UDim2.new(1, -TextOffset, 1, 0),
             Text = Name,
             Font = Enum.Font.Gotham,
             TextSize = 13,
             TextXAlignment = Enum.TextXAlignment.Left,
             TextColor3 = Color3.fromRGB(130, 130, 130),
-            ZIndex = 2,
+            ZIndex = 5,
             Parent = TabButton;
         });
-
-        -- ... (тут идет создание TabFrame, LeftSide, RightSide — их не трогай)
-
-        function Tab:ShowTab()
-            for _, Tab in next, Window.Tabs do Tab:HideTab() end;
-            TabHighlight.Visible = true;
-            TabButtonLabel.TextColor3 = Library.FontColor;
-            
-            -- Красим иконку в белый при выборе
-            TabIcon.ImageColor3 = Library.FontColor; 
-            
-            if not Library.RegistryMap[TabButtonLabel] then Library.RegistryMap[TabButtonLabel] = {Properties={}} end
-            Library.RegistryMap[TabButtonLabel].Properties.TextColor3 = 'FontColor';
-            TabFrame.Visible = true;
-        end;
-
-        function Tab:HideTab()
-            TabHighlight.Visible = false;
-            TabButtonLabel.TextColor3 = Color3.fromRGB(130, 130, 130);
-            
-            -- Возвращаем иконке серый цвет
-            TabIcon.ImageColor3 = Color3.fromRGB(130, 130, 130);
-            
-            if Library.RegistryMap[TabButtonLabel] then
-                Library.RegistryMap[TabButtonLabel].Properties.TextColor3 = nil;
-            end
-            TabFrame.Visible = false;
-        end;
-
-        -- Не забудь добавить TabIcon в реестр, если хочешь, чтобы она меняла цвет с темой
-        Library:AddToRegistry(TabIcon, { ImageColor3 = 'FontColor' });
-
-        -- Остальной код функции AddTab...
 
         local TabFrame = Library:Create('Frame', {
             Name = 'TabFrame',
@@ -2923,10 +2903,14 @@ local LeftSide = Library:Create('ScrollingFrame', {
             end);
         end;
 
-        function Tab:ShowTab()
+function Tab:ShowTab()
             for _, Tab in next, Window.Tabs do Tab:HideTab() end;
             TabHighlight.Visible = true;
+            TabButton.BackgroundTransparency = 0; 
+            
             TabButtonLabel.TextColor3 = Library.FontColor;
+            if HasIcon then TabIcon.ImageColor3 = Library.FontColor end -- Иконка белеет
+            
             if not Library.RegistryMap[TabButtonLabel] then Library.RegistryMap[TabButtonLabel] = {Properties={}} end
             Library.RegistryMap[TabButtonLabel].Properties.TextColor3 = 'FontColor';
             TabFrame.Visible = true;
@@ -2934,7 +2918,11 @@ local LeftSide = Library:Create('ScrollingFrame', {
 
         function Tab:HideTab()
             TabHighlight.Visible = false;
+            TabButton.BackgroundTransparency = 1; 
+            
             TabButtonLabel.TextColor3 = Color3.fromRGB(130, 130, 130);
+            if HasIcon then TabIcon.ImageColor3 = Color3.fromRGB(130, 130, 130) end -- Иконка сереет
+            
             if Library.RegistryMap[TabButtonLabel] then
                 Library.RegistryMap[TabButtonLabel].Properties.TextColor3 = nil;
             end
