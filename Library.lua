@@ -1826,7 +1826,7 @@ do
         local ToggleOuter = Library:Create('Frame', {
             BackgroundColor3 = Library.OutlineColor;
             BorderSizePixel = 0;
-            Size = UDim2.new(0, 16, 16, 16);
+            Size = UDim2.new(0, 24, 0, 24);
             ZIndex = 5;
             Parent = Container;
         });
