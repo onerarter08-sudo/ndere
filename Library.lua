@@ -1846,7 +1846,7 @@ do
             BorderSizePixel = 0;
             AnchorPoint = Vector2.new(0.5, 0.5);
             Position = UDim2.new(0.5, 0, 0.5, 0);
-            Size = UDim2.new(1.5, -2, 1.5, -2); -- На 1px меньше с каждой стороны, чтобы "обводка" была тонкой
+            Size = UDim2.new(1, -2, 1, -2); -- На 1px меньше с каждой стороны, чтобы "обводка" была тонкой
             ZIndex = 6;
             Parent = ToggleOuter;
         });
