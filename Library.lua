@@ -1825,8 +1825,8 @@ do
         -- Внешний фрейм (теперь выполняет роль скругленной обводки)
         local ToggleOuter = Library:Create('Frame', {
             BackgroundColor3 = Library.OutlineColor;
-            BorderSizePixel = 1;
-            Size = UDim2.new(0, 20, 0, 20);
+            BorderSizePixel = 0;
+            Size = UDim2.new(0, 16, 16, 16);
             ZIndex = 5;
             Parent = Container;
         });
@@ -1846,7 +1846,7 @@ do
             BorderSizePixel = 0;
             AnchorPoint = Vector2.new(0.5, 0.5);
             Position = UDim2.new(0.5, 0, 0.5, 0);
-            Size = UDim2.new(1, -2, 1, -2); -- На 1px меньше с каждой стороны, чтобы "обводка" была тонкой
+            Size = UDim2.new(1.5, -2, 1.5, -2); -- На 1px меньше с каждой стороны, чтобы "обводка" была тонкой
             ZIndex = 6;
             Parent = ToggleOuter;
         });
