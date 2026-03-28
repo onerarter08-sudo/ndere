@@ -2770,21 +2770,14 @@ local TabContainer = Library:Create('Frame', {
         AnchorPoint = Vector2.new(0, 0),
         BackgroundColor3 = Library.BackgroundColor,
         BorderSizePixel = 0,
-        -- Начинаем сразу после табов (150 + 10 зазор) и под топ-баром (40)
-        Position = UDim2.new(0, 160, 0, 45), 
-        -- Ширина: во все окно минус табы и отступы (150 + 10 + 10 зазор справа)
-        -- Высота: во все окно минус топ-бар и отступы (45 + 10 зазор снизу)
-        Size = UDim2.new(1, -170, 1, -55), 
+        -- Встаем ровно по твоим красным линиям:
+        Position = UDim2.new(0, 155, 0, 45), 
+        -- Заполняем всё до правого и нижнего края (с зазором 5px)
+        Size = UDim2.new(1, -160, 1, -50), 
         ClipsDescendants = true,
         ZIndex = 1;
         Parent = Outer;
     });
-
-    Library:Create('UICorner', { CornerRadius = UDim.new(0, 6), Parent = TabContainer });
-    Library:AddToRegistry(TabContainer, { BackgroundColor3 = 'BackgroundColor' });
-
-    Library:Create('UICorner', { CornerRadius = UDim.new(0, 6), Parent = TabContainer });
-    Library:AddToRegistry(TabContainer, { BackgroundColor3 = 'BackgroundColor' });
 
     Library:Create('UICorner', { CornerRadius = UDim.new(0, 6), Parent = TabContainer });
     Library:AddToRegistry(TabContainer, { BackgroundColor3 = 'BackgroundColor' });
@@ -2845,10 +2838,8 @@ local TabContainer = Library:Create('Frame', {
 local LeftSide = Library:Create('ScrollingFrame', {
             BackgroundTransparency = 1;
             BorderSizePixel = 0;
-            -- Прижимаем почти вплотную к левому верхнему углу серого фрейма
-            Position = UDim2.new(0, 6, 0, 6); 
-            -- Ширина 50% минус небольшой зазор, высота почти 100%
-            Size = UDim2.new(0.5, -8, 1, -12); 
+            Position = UDim2.new(0, 5, 0, 5); -- Минимальный отступ от краев серого фрейма
+            Size = UDim2.new(0.5, -10, 1, -10); 
             CanvasSize = UDim2.new(0, 0, 0, 0);
             BottomImage = ''; TopImage = '';
             ScrollBarThickness = 0;
@@ -2859,10 +2850,8 @@ local LeftSide = Library:Create('ScrollingFrame', {
         local RightSide = Library:Create('ScrollingFrame', {
             BackgroundTransparency = 1;
             BorderSizePixel = 0;
-            -- Начинается ровно с середины (0.5)
-            Position = UDim2.new(0.5, 2, 0, 6); 
-            -- Такая же ширина и высота
-            Size = UDim2.new(0.5, -8, 1, -12); 
+            Position = UDim2.new(0.5, 5, 0, 5); 
+            Size = UDim2.new(0.5, -10, 1, -10); 
             CanvasSize = UDim2.new(0, 0, 0, 0);
             BottomImage = ''; TopImage = '';
             ScrollBarThickness = 0;
