@@ -2782,13 +2782,6 @@ local TabContainer = Library:Create('Frame', {
     Library:Create('UICorner', { CornerRadius = UDim.new(0, 6), Parent = TabContainer });
     Library:AddToRegistry(TabContainer, { BackgroundColor3 = 'BackgroundColor' });
 
-    Library:Create('UICorner', { CornerRadius = UDim.new(0, 6), Parent = TabContainer });
-    Library:AddToRegistry(TabContainer, { BackgroundColor3 = 'BackgroundColor' });
-
-    -- Даем ему скругления
-    Library:Create('UICorner', { CornerRadius = UDim.new(0, 6), Parent = TabContainer });
-    Library:AddToRegistry(TabContainer, { BackgroundColor3 = 'BackgroundColor' });
-
     function Window:SetWindowTitle(Title)
         WindowLabel.Text = Title;
     end;
