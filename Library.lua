@@ -1808,7 +1808,7 @@ do
         return Textbox;
     end;
 
-    function Funcs:AddToggle(Idx, Info)
+function Funcs:AddToggle(Idx, Info)
         assert(Info.Text, 'AddInput: Missing `Text` string.')
 
         local Toggle = {
@@ -1822,13 +1822,43 @@ do
         local Groupbox = self;
         local Container = Groupbox.Container;
 
-        -- Внешний фрейм (теперь выполняет роль скругленной обводки)
-        local ToggleOuter = Library:Create('Frame', {
-            BackgroundColor3 = Library.OutlineColor;
-            BorderSizePixel = 0; -- Никаких черных контуров!
-            Size = UDim2.new(0, 14, 0, 14);
+        -- 1. Главный невидимый контейнер для всей строки
+        local ToggleContainer = Library:Create('Frame', {
+            BackgroundTransparency = 1;
+            Size = UDim2.new(1, -4, 0, 15); -- Высота строки 15px
             ZIndex = 5;
             Parent = Container;
+        });
+
+        -- 2. Текст тоггла (прижат влево)
+        local ToggleLabel = Library:CreateLabel({
+            Size = UDim2.new(1, -24, 1, 0); -- Занимает всю ширину МИНУС место под квадратик
+            Position = UDim2.new(0, 0, 0, 0);
+            TextSize = 13,
+            Text = Info.Text;
+            TextXAlignment = Enum.TextXAlignment.Left;
+            ZIndex = 6;
+            Parent = ToggleContainer;
+        });
+
+        -- Это нужно для того, чтобы колорпикеры и бинды спавнились ровно слева от чекбокса
+        Library:Create('UIListLayout', {
+            Padding = UDim.new(0, 4);
+            FillDirection = Enum.FillDirection.Horizontal;
+            HorizontalAlignment = Enum.HorizontalAlignment.Right;
+            SortOrder = Enum.SortOrder.LayoutOrder;
+            Parent = ToggleLabel;
+        });
+
+        -- 3. Квадратик (Внешняя обводка), прижат к ПРАВОМУ краю!
+        local ToggleOuter = Library:Create('Frame', {
+            BackgroundColor3 = Library.OutlineColor;
+            BorderSizePixel = 0;
+            AnchorPoint = Vector2.new(1, 0.5); -- Якорь по центру справа
+            Position = UDim2.new(1, 0, 0.5, 0); -- Прижимаем в правый край
+            Size = UDim2.new(0, 14, 0, 14); -- ЖЕСТКИЙ РАЗМЕР (не будет растягиваться)
+            ZIndex = 5;
+            Parent = ToggleContainer;
         });
 
         Library:Create('UICorner', {
@@ -1840,13 +1870,13 @@ do
             BackgroundColor3 = 'OutlineColor';
         });
 
-        -- Внутренний фрейм (фон чекбокса)
+        -- 4. Заливка квадратика (Внутренняя часть)
         local ToggleInner = Library:Create('Frame', {
             BackgroundColor3 = Library.MainColor;
             BorderSizePixel = 0;
             AnchorPoint = Vector2.new(0.5, 0.5);
             Position = UDim2.new(0.5, 0, 0.5, 0);
-            Size = UDim2.new(1, -2, 1, -2); -- На 1px меньше с каждой стороны, чтобы "обводка" была тонкой
+            Size = UDim2.new(1, -2, 1, -2); -- Ровно на 1px меньше рамки
             ZIndex = 6;
             Parent = ToggleOuter;
         });
@@ -1860,29 +1890,12 @@ do
             BackgroundColor3 = 'MainColor';
         });
 
-        local ToggleLabel = Library:CreateLabel({
-            Size = UDim2.new(0, 216, 1, 0);
-            Position = UDim2.new(1, 8, 0, 0); -- Отступ от квадратика
-            TextSize = 13, -- В Камидере текст мелкий и аккуратный
-            Text = Info.Text;
-            TextXAlignment = Enum.TextXAlignment.Left;
-            ZIndex = 6;
-            Parent = ToggleOuter;
-        });
-
-        Library:Create('UIListLayout', {
-            Padding = UDim.new(0, 4);
-            FillDirection = Enum.FillDirection.Horizontal;
-            HorizontalAlignment = Enum.HorizontalAlignment.Right;
-            SortOrder = Enum.SortOrder.LayoutOrder;
-            Parent = ToggleLabel;
-        });
-
+        -- Невидимая кнопка поверх всей строки для регистрации кликов
         local ToggleRegion = Library:Create('Frame', {
             BackgroundTransparency = 1;
-            Size = UDim2.new(0, 170, 1, 0);
+            Size = UDim2.new(1, 0, 1, 0);
             ZIndex = 8;
-            Parent = ToggleOuter;
+            Parent = ToggleContainer;
         });
 
         function Toggle:UpdateColors()
@@ -1894,7 +1907,7 @@ do
         end
 
         function Toggle:Display()
-            -- Дизайн Камидере: при включении квадратик полностью заливается цветом
+            -- При включении квадратик полностью заливается цветом акцента
             ToggleInner.BackgroundColor3 = Toggle.Value and Library.AccentColor or Library.MainColor;
             ToggleOuter.BackgroundColor3 = Toggle.Value and Library.AccentColor or Library.OutlineColor;
 
@@ -1939,7 +1952,7 @@ do
         end
 
         Toggle:Display();
-        Groupbox:AddBlank(Info.BlankSize or 5 + 2);
+        Groupbox:AddBlank(Info.BlankSize or 7);
         Groupbox:Resize();
 
         Toggle.TextLabel = ToggleLabel;
