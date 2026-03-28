@@ -2766,15 +2766,21 @@ if Library.RegistryMap[WindowLabel] then
         Parent = TabArea;
     });
 
--- Тот самый фрейм ЗА всеми групбоксами (с отступом под Топ-бар) --тягай
+-- Расчет: 
+    -- Размер: 0.75 (75%) от ширины и высоты. 
+    -- Оффсеты тоже уменьшаем на четверть: 145 * 0.75 = 109, 40 * 0.75 = 30.
     local TabContainer = Library:Create('Frame', {
+        AnchorPoint = Vector2.new(1, 1), -- Ставим якорь в правый нижний угол самого фрейма
         BackgroundColor3 = Library.BackgroundColor,
         BorderSizePixel = 0,
-        Position = UDim2.new(0, 145, 0, 40), -- ОПУСТИЛИ НИЖЕ (теперь сверху есть 40 пикселей под топ-бар и вотермарку)
-        Size = UDim2.new(1, -110, 1, 40), -- Уменьшили высоту, чтобы снизу остался аккуратный отступ 12px
+        Position = UDim2.new(1, 0, 1, 0), -- Прижимаем якорь к правому нижнему углу основного окна
+        Size = UDim2.new(0.75, -109, 0.75, -30), -- На четверть меньше во всех осях
         ZIndex = 2;
         Parent = Outer;
     });
+
+    Library:Create('UICorner', { CornerRadius = UDim.new(0, 6), Parent = TabContainer });
+    Library:AddToRegistry(TabContainer, { BackgroundColor3 = 'BackgroundColor' });
 
     -- Даем ему скругления
     Library:Create('UICorner', { CornerRadius = UDim.new(0, 6), Parent = TabContainer });
