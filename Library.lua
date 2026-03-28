@@ -2773,7 +2773,7 @@ local TabContainer = Library:Create('Frame', {
         -- Сдвинули левее: теперь отступ от края панели табов всего 1 пиксель (150 + 1)
         Position = UDim2.new(0, 120, 0, 40), --тест
         -- Растянули: (151 + 5 пикселей зазора справа = 156)
-        Size = UDim2.new(1, -130, 1, -50), 
+        Size = UDim2.new(1, -150, 1, -80), 
         ClipsDescendants = true,
         ZIndex = 1;
         Parent = Outer;
