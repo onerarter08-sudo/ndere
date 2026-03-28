@@ -2829,11 +2829,11 @@ if Library.RegistryMap[WindowLabel] then
             Parent = TabContainer;
         });
 
-        local LeftSide = Library:Create('ScrollingFrame', {
+local LeftSide = Library:Create('ScrollingFrame', {
             BackgroundTransparency = 1;
             BorderSizePixel = 0;
-            Position = UDim2.new(0, 5, 0, 35);
-            Size = UDim2.new(0.5, -12, 1, -45);
+            Position = UDim2.new(0, 5, 0, 10); -- БЫЛО 35, СТАЛО 10 (подтянули наверх!)
+            Size = UDim2.new(0.5, -12, 1, -20); -- Увеличили размер, чтобы они доставали до низа
             CanvasSize = UDim2.new(0, 0, 0, 0);
             BottomImage = ''; TopImage = '';
             ScrollBarThickness = 0;
@@ -2844,8 +2844,8 @@ if Library.RegistryMap[WindowLabel] then
         local RightSide = Library:Create('ScrollingFrame', {
             BackgroundTransparency = 1;
             BorderSizePixel = 0;
-            Position = UDim2.new(0.5, 7, 0, 35);
-            Size = UDim2.new(0.5, -12, 1, -45);
+            Position = UDim2.new(0.5, 7, 0, 10); -- БЫЛО 35, СТАЛО 10 (подтянули наверх!)
+            Size = UDim2.new(0.5, -12, 1, -20); -- Увеличили размер
             CanvasSize = UDim2.new(0, 0, 0, 0);
             BottomImage = ''; TopImage = '';
             ScrollBarThickness = 0;
