@@ -2091,183 +2091,136 @@ function Funcs:AddSlider(Idx, Info)
         return Slider;
     end;
 
-    function Funcs:AddDropdown(Idx, Info)
-        if Info.SpecialType == 'Player' then
-            Info.Values = GetPlayersString();
-            Info.AllowNull = true;
-        elseif Info.SpecialType == 'Team' then
-            Info.Values = GetTeamsString();
-            Info.AllowNull = true;
-        end;
-
-        assert(Info.Values, 'AddDropdown: Missing dropdown value list.');
-        assert(Info.AllowNull or Info.Default, 'AddDropdown: Missing default value. Pass `AllowNull` as true if this was intentional.')
-
-        if (not Info.Text) then
-            Info.Compact = true;
-        end;
+function Funcs:AddDropdown(Idx, Info)
+        assert(Info.Text, 'AddDropdown: Missing dropdown text.');
+        assert(Info.Values, 'AddDropdown: Missing dropdown values.');
 
         local Dropdown = {
             Values = Info.Values;
-            Value = Info.Multi and {};
+            Value = Info.Multi and {} or '';
             Multi = Info.Multi;
             Type = 'Dropdown';
-            SpecialType = Info.SpecialType; -- can be either 'Player' or 'Team'
+            SpecialType = Info.SpecialType;
             Callback = Info.Callback or function(Value) end;
         };
 
         local Groupbox = self;
         local Container = Groupbox.Container;
 
-        local RelativeOffset = 0;
-
-        if not Info.Compact then
-            local DropdownLabel = Library:CreateLabel({
-                Size = UDim2.new(1, 0, 0, 10);
-                TextSize = 14;
-                Text = Info.Text;
-                TextXAlignment = Enum.TextXAlignment.Left;
-                TextYAlignment = Enum.TextYAlignment.Bottom;
-                ZIndex = 5;
-                Parent = Container;
-            });
-
-            Groupbox:AddBlank(3);
-        end
-
-        for _, Element in next, Container:GetChildren() do
-            if not Element:IsA('UIListLayout') then
-                RelativeOffset = RelativeOffset + Element.Size.Y.Offset;
-            end;
-        end;
-
-        local DropdownOuter = Library:Create('Frame', {
-            BackgroundColor3 = Color3.new(0, 0, 0);
-            BorderColor3 = Color3.new(0, 0, 0);
-            Size = UDim2.new(1, -4, 0, 20);
+        -- 1. Общий прозрачный контейнер (строка)
+        local DropdownContainer = Library:Create('Frame', {
+            BackgroundTransparency = 1;
+            Size = UDim2.new(1, -4, 0, 24); -- Высота строки
             ZIndex = 5;
             Parent = Container;
         });
 
-        Library:AddToRegistry(DropdownOuter, {
-            BorderColor3 = 'Black';
+        -- 2. Текст названия (Слева)
+        local DropdownLabel = Library:CreateLabel({
+            Size = UDim2.new(0.5, 0, 1, 0);
+            Position = UDim2.new(0, 0, 0, 0);
+            TextSize = 13;
+            Text = Info.Text;
+            TextXAlignment = Enum.TextXAlignment.Left;
+            ZIndex = 6;
+            Parent = DropdownContainer;
         });
 
-        local DropdownInner = Library:Create('Frame', {
-            BackgroundColor3 = Library.MainColor;
-            BorderColor3 = Library.OutlineColor;
-            BorderMode = Enum.BorderMode.Inset;
-            Size = UDim2.new(1, 0, 1, 0);
+        -- 3. Кнопка самого дропдауна (Справа)
+        local DropdownOuter = Library:Create('Frame', {
+            BackgroundColor3 = Library.BackgroundColor; -- Цвет как у фона всего меню
+            BorderSizePixel = 0;
+            Position = UDim2.new(0.5, 0, 0, 0);
+            Size = UDim2.new(0.5, 0, 1, 0);
+            ZIndex = 5;
+            Parent = DropdownContainer;
+        });
+
+        Library:Create('UICorner', { CornerRadius = UDim.new(0, 4), Parent = DropdownOuter });
+        Library:AddToRegistry(DropdownOuter, { BackgroundColor3 = 'BackgroundColor'; });
+
+        -- 4. Акцентная линия снизу (Топбар снизу, как ты и просил)
+        local DropdownHighlight = Library:Create('Frame', {
+            BackgroundColor3 = Library.AccentColor;
+            BorderSizePixel = 0;
+            Position = UDim2.new(0, 0, 1, -2); -- Прижата к низу кнопки
+            Size = UDim2.new(1, 0, 0, 2); -- Толщина 2 пикселя
             ZIndex = 6;
             Parent = DropdownOuter;
         });
 
-        Library:AddToRegistry(DropdownInner, {
-            BackgroundColor3 = 'MainColor';
-            BorderColor3 = 'OutlineColor';
-        });
+        Library:Create('UICorner', { CornerRadius = UDim.new(0, 4), Parent = DropdownHighlight });
+        Library:AddToRegistry(DropdownHighlight, { BackgroundColor3 = 'AccentColor'; });
 
-        Library:Create('UIGradient', {
-            Color = ColorSequence.new({
-                ColorSequenceKeypoint.new(0, Color3.new(1, 1, 1)),
-                ColorSequenceKeypoint.new(1, Color3.fromRGB(212, 212, 212))
-            });
-            Rotation = 90;
-            Parent = DropdownInner;
-        });
-
-        local DropdownArrow = Library:Create('ImageLabel', {
-            AnchorPoint = Vector2.new(0, 0.5);
-            BackgroundTransparency = 1;
-            Position = UDim2.new(1, -16, 0.5, 0);
-            Size = UDim2.new(0, 12, 0, 12);
-            Image = 'http://www.roblox.com/asset/?id=6282522798';
-            ZIndex = 8;
-            Parent = DropdownInner;
-        });
-
-        local ItemList = Library:CreateLabel({
-            Position = UDim2.new(0, 5, 0, 0);
-            Size = UDim2.new(1, -5, 1, 0);
-            TextSize = 14;
-            Text = '--';
+        -- 5. Текст внутри кнопки (Выбранное значение)
+        local DropdownInnerLabel = Library:CreateLabel({
+            Size = UDim2.new(1, -20, 1, 0);
+            Position = UDim2.new(0, 8, 0, 0); -- Отступ от левого края кнопки
+            TextSize = 13;
+            Text = 'None';
             TextXAlignment = Enum.TextXAlignment.Left;
-            TextWrapped = true;
-            ZIndex = 7;
-            Parent = DropdownInner;
+            TextColor3 = Library.FontColor;
+            ZIndex = 6;
+            Parent = DropdownOuter;
         });
 
-        Library:OnHighlight(DropdownOuter, DropdownOuter,
-            { BorderColor3 = 'AccentColor' },
-            { BorderColor3 = 'Black' }
-        );
+        -- 6. Маленькая стрелочка справа
+        local DropdownArrow = Library:CreateLabel({
+            Size = UDim2.new(0, 20, 1, 0);
+            Position = UDim2.new(1, -20, 0, 0);
+            TextSize = 10; -- Специально сделал меньше
+            Text = '▼';
+            TextColor3 = Color3.fromRGB(150, 150, 150); -- Слегка тусклая
+            ZIndex = 6;
+            Parent = DropdownOuter;
+        });
 
-        if type(Info.Tooltip) == 'string' then
-            Library:AddToolTip(Info.Tooltip, DropdownOuter)
-        end
+        local DropdownInteract = Library:Create('TextButton', {
+            BackgroundTransparency = 1;
+            Size = UDim2.new(1, 0, 1, 0);
+            Text = '';
+            ZIndex = 7;
+            Parent = DropdownOuter;
+        });
 
-        local MAX_DROPDOWN_ITEMS = 8;
-
+        -- === Выпадающий список (То, что открывается при клике) ===
         local ListOuter = Library:Create('Frame', {
-            BackgroundColor3 = Color3.new(0, 0, 0);
-            BorderColor3 = Color3.new(0, 0, 0);
+            BackgroundColor3 = Library.BackgroundColor;
+            BorderSizePixel = 0;
             ZIndex = 20;
             Visible = false;
             Parent = ScreenGui;
         });
 
-        local function RecalculateListPosition()
-            ListOuter.Position = UDim2.fromOffset(DropdownOuter.AbsolutePosition.X, DropdownOuter.AbsolutePosition.Y + DropdownOuter.Size.Y.Offset + 1);
-        end;
+        Library:Create('UICorner', { CornerRadius = UDim.new(0, 4), Parent = ListOuter });
+        Library:AddToRegistry(ListOuter, { BackgroundColor3 = 'BackgroundColor'; });
 
-        local function RecalculateListSize(YSize)
-            ListOuter.Size = UDim2.fromOffset(DropdownOuter.AbsoluteSize.X, YSize or (MAX_DROPDOWN_ITEMS * 20 + 2))
-        end;
+        -- Добавил тонкую обводку выпадающему списку, чтобы он не сливался с меню
+        local ListStroke = Instance.new("UIStroke")
+        ListStroke.Color = Library.MainColor
+        ListStroke.Thickness = 1
+        ListStroke.Parent = ListOuter
+        Library:AddToRegistry(ListStroke, { Color = 'MainColor'; });
 
-        RecalculateListPosition();
-        RecalculateListSize();
-
-        DropdownOuter:GetPropertyChangedSignal('AbsolutePosition'):Connect(RecalculateListPosition);
-
-        local ListInner = Library:Create('Frame', {
-            BackgroundColor3 = Library.MainColor;
-            BorderColor3 = Library.OutlineColor;
-            BorderMode = Enum.BorderMode.Inset;
-            BorderSizePixel = 0;
-            Size = UDim2.new(1, 0, 1, 0);
-            ZIndex = 21;
-            Parent = ListOuter;
-        });
-
-        Library:AddToRegistry(ListInner, {
-            BackgroundColor3 = 'MainColor';
-            BorderColor3 = 'OutlineColor';
-        });
-
-        local Scrolling = Library:Create('ScrollingFrame', {
+        local ScrollingFrame = Library:Create('ScrollingFrame', {
             BackgroundTransparency = 1;
             BorderSizePixel = 0;
             CanvasSize = UDim2.new(0, 0, 0, 0);
-            Size = UDim2.new(1, 0, 1, 0);
+            Size = UDim2.new(1, -4, 1, -4);
+            Position = UDim2.new(0, 2, 0, 2);
             ZIndex = 21;
-            Parent = ListInner;
-
-            TopImage = 'rbxasset://textures/ui/Scroll/scroll-middle.png',
-            BottomImage = 'rbxasset://textures/ui/Scroll/scroll-middle.png',
-
-            ScrollBarThickness = 3,
-            ScrollBarImageColor3 = Library.AccentColor,
+            BottomImage = '';
+            TopImage = '';
+            ScrollBarThickness = 2; -- Тонкий и аккуратный скролл
+            ScrollBarImageColor3 = Library.AccentColor;
+            Parent = ListOuter;
         });
+        Library:AddToRegistry(ScrollingFrame, { ScrollBarImageColor3 = 'AccentColor'; });
 
-        Library:AddToRegistry(Scrolling, {
-            ScrollBarImageColor3 = 'AccentColor'
-        })
-
-        Library:Create('UIListLayout', {
-            Padding = UDim.new(0, 0);
-            FillDirection = Enum.FillDirection.Vertical;
+        local UIListLayout = Library:Create('UIListLayout', {
+            Padding = UDim.new(0, 2);
             SortOrder = Enum.SortOrder.LayoutOrder;
-            Parent = Scrolling;
+            Parent = ScrollingFrame;
         });
 
         function Dropdown:Display()
@@ -2280,34 +2233,30 @@ function Funcs:AddSlider(Idx, Info)
                         Str = Str .. Value .. ', ';
                     end;
                 end;
-
-                Str = Str:sub(1, #Str - 2);
+                Str = Str:sub(1, -3);
             else
                 Str = Dropdown.Value or '';
             end;
 
-            ItemList.Text = (Str == '' and '--' or Str);
+            DropdownInnerLabel.Text = (Str == '' and 'None' or Str);
         end;
 
         function Dropdown:GetActiveValues()
             if Info.Multi then
                 local T = {};
-
                 for Value, Bool in next, Dropdown.Value do
                     table.insert(T, Value);
                 end;
-
                 return T;
             else
-                return Dropdown.Value and 1 or 0;
+                return Dropdown.Value and { Dropdown.Value } or {};
             end;
         end;
 
         function Dropdown:BuildDropdownList()
             local Values = Dropdown.Values;
-            local Buttons = {};
 
-            for _, Element in next, Scrolling:GetChildren() do
+            for _, Element in next, ScrollingFrame:GetChildren() do
                 if not Element:IsA('UIListLayout') then
                     Element:Destroy();
                 end;
@@ -2316,129 +2265,84 @@ function Funcs:AddSlider(Idx, Info)
             local Count = 0;
 
             for Idx, Value in next, Values do
-                local Table = {};
+                local Active = false;
 
-                Count = Count + 1;
+                if Info.Multi then Active = Dropdown.Value[Value];
+                else Active = Dropdown.Value == Value; end;
 
-                local Button = Library:Create('Frame', {
-                    BackgroundColor3 = Library.MainColor;
-                    BorderColor3 = Library.OutlineColor;
-                    BorderMode = Enum.BorderMode.Middle;
-                    Size = UDim2.new(1, -1, 0, 20);
-                    ZIndex = 23;
-                    Active = true,
-                    Parent = Scrolling;
+                local Button = Library:Create('TextButton', {
+                    BackgroundColor3 = Active and Library.MainColor or Library.BackgroundColor;
+                    BorderSizePixel = 0;
+                    Size = UDim2.new(1, 0, 0, 20);
+                    Text = '';
+                    ZIndex = 22;
+                    Parent = ScrollingFrame;
                 });
 
-                Library:AddToRegistry(Button, {
-                    BackgroundColor3 = 'MainColor';
-                    BorderColor3 = 'OutlineColor';
-                });
+                Library:Create('UICorner', { CornerRadius = UDim.new(0, 3), Parent = Button });
+                Library:AddToRegistry(Button, { BackgroundColor3 = Active and 'MainColor' or 'BackgroundColor'; });
 
-                local ButtonLabel = Library:CreateLabel({
-                    Active = false;
-                    Size = UDim2.new(1, -6, 1, 0);
+                local Label = Library:CreateLabel({
+                    Size = UDim2.new(1, -10, 1, 0);
                     Position = UDim2.new(0, 6, 0, 0);
-                    TextSize = 14;
+                    TextSize = 13;
                     Text = Value;
                     TextXAlignment = Enum.TextXAlignment.Left;
-                    ZIndex = 25;
+                    TextColor3 = Active and Library.AccentColor or Library.FontColor;
+                    ZIndex = 23;
                     Parent = Button;
                 });
 
-                Library:OnHighlight(Button, Button,
-                    { BorderColor3 = 'AccentColor', ZIndex = 24 },
-                    { BorderColor3 = 'OutlineColor', ZIndex = 23 }
-                );
+                Library:AddToRegistry(Label, { TextColor3 = Active and 'AccentColor' or 'FontColor'; });
 
-                local Selected;
-
-                if Info.Multi then
-                    Selected = Dropdown.Value[Value];
-                else
-                    Selected = Dropdown.Value == Value;
-                end;
-
-                function Table:UpdateButton()
-                    if Info.Multi then
-                        Selected = Dropdown.Value[Value];
-                    else
-                        Selected = Dropdown.Value == Value;
-                    end;
-
-                    ButtonLabel.TextColor3 = Selected and Library.AccentColor or Library.FontColor;
-                    Library.RegistryMap[ButtonLabel].Properties.TextColor3 = Selected and 'AccentColor' or 'FontColor';
-                end;
-
-                ButtonLabel.InputBegan:Connect(function(Input)
+                Button.InputBegan:Connect(function(Input)
                     if Input.UserInputType == Enum.UserInputType.MouseButton1 then
-                        local Try = not Selected;
-
-                        if Dropdown:GetActiveValues() == 1 and (not Try) and (not Info.AllowNull) then
+                        if Info.Multi then
+                            Dropdown.Value[Value] = not Dropdown.Value[Value];
+                            Dropdown:SetValue(Dropdown.Value);
+                            Dropdown:BuildDropdownList();
                         else
-                            if Info.Multi then
-                                Selected = Try;
-
-                                if Selected then
-                                    Dropdown.Value[Value] = true;
-                                else
-                                    Dropdown.Value[Value] = nil;
-                                end;
-                            else
-                                Selected = Try;
-
-                                if Selected then
-                                    Dropdown.Value = Value;
-                                else
-                                    Dropdown.Value = nil;
-                                end;
-
-                                for _, OtherButton in next, Buttons do
-                                    OtherButton:UpdateButton();
-                                end;
-                            end;
-
-                            Table:UpdateButton();
-                            Dropdown:Display();
-
-                            Library:SafeCallback(Dropdown.Callback, Dropdown.Value);
-                            Library:SafeCallback(Dropdown.Changed, Dropdown.Value);
-
-                            Library:AttemptSave();
+                            Dropdown.Value = Value;
+                            Dropdown:SetValue(Dropdown.Value);
+                            ListOuter.Visible = false;
+                            DropdownArrow.Text = '▼';
+                            Library.OpenedFrames[ListOuter] = nil;
                         end;
+                        Library:AttemptSave();
                     end;
                 end);
 
-                Table:UpdateButton();
-                Dropdown:Display();
-
-                Buttons[Button] = Table;
+                Count = Count + 1;
             end;
 
-            Scrolling.CanvasSize = UDim2.fromOffset(0, (Count * 20) + 1);
-
-            local Y = math.clamp(Count * 20, 0, MAX_DROPDOWN_ITEMS * 20) + 1;
-            RecalculateListSize(Y);
+            local MaxHeight = math.min(Count * 22, 120); -- Максимальная высота выпадающего списка
+            ListOuter.Size = UDim2.new(0, DropdownOuter.AbsoluteSize.X, 0, MaxHeight + 4);
+            ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, Count * 22);
         end;
 
         function Dropdown:SetValues(NewValues)
-            if NewValues then
-                Dropdown.Values = NewValues;
+            if NewValues then Dropdown.Values = NewValues; end;
+            Dropdown:BuildDropdownList();
+            Dropdown:Display();
+        end;
+
+        function Dropdown:SetValue(Val)
+            if Dropdown.Multi then
+                local nTable = {};
+                for Value, Bool in next, Val do
+                    if table.find(Dropdown.Values, Value) then nTable[Value] = true end;
+                end;
+                Dropdown.Value = nTable;
+            else
+                if not Val then Dropdown.Value = '';
+                elseif table.find(Dropdown.Values, Val) then Dropdown.Value = Val; end;
             end;
 
             Dropdown:BuildDropdownList();
-        end;
+            Dropdown:Display();
 
-        function Dropdown:OpenDropdown()
-            ListOuter.Visible = true;
-            Library.OpenedFrames[ListOuter] = true;
-            DropdownArrow.Rotation = 180;
-        end;
-
-        function Dropdown:CloseDropdown()
-            ListOuter.Visible = false;
-            Library.OpenedFrames[ListOuter] = nil;
-            DropdownArrow.Rotation = 0;
+            Library:SafeCallback(Dropdown.Callback, Dropdown.Value);
+            Library:SafeCallback(Dropdown.Changed, Dropdown.Value);
         end;
 
         function Dropdown:OnChanged(Func)
@@ -2446,89 +2350,43 @@ function Funcs:AddSlider(Idx, Info)
             Func(Dropdown.Value);
         end;
 
-        function Dropdown:SetValue(Val)
-            if Dropdown.Multi then
-                local nTable = {};
+        DropdownInteract.InputBegan:Connect(function(Input)
+            if Input.UserInputType == Enum.UserInputType.MouseButton1 and not Library:MouseIsOverOpenedFrame() then
+                ListOuter.Visible = not ListOuter.Visible;
+                DropdownArrow.Text = ListOuter.Visible and '▲' or '▼'; -- Стрелочка переворачивается при открытии!
+                
+                if ListOuter.Visible then
+                    ListOuter.Position = UDim2.fromOffset(DropdownOuter.AbsolutePosition.X, DropdownOuter.AbsolutePosition.Y + DropdownOuter.AbsoluteSize.Y + 2);
+                    Dropdown:BuildDropdownList();
+                    Library.OpenedFrames[ListOuter] = true;
+                else
+                    Library.OpenedFrames[ListOuter] = nil;
+                end;
+            end;
+        end);
 
-                for Value, Bool in next, Val do
-                    if table.find(Dropdown.Values, Value) then
-                        nTable[Value] = true
+        -- Закрытие дропдауна, если кликнуть куда-то в другое место экрана
+        Library:GiveSignal(InputService.InputBegan:Connect(function(Input)
+            if Input.UserInputType == Enum.UserInputType.MouseButton1 then
+                if ListOuter.Visible then
+                    local AbsPos, AbsSize = ListOuter.AbsolutePosition, ListOuter.AbsoluteSize;
+                    if Mouse.X < AbsPos.X or Mouse.X > AbsPos.X + AbsSize.X or Mouse.Y < AbsPos.Y or Mouse.Y > AbsPos.Y + AbsSize.Y then
+                        local DPos, DSize = DropdownOuter.AbsolutePosition, DropdownOuter.AbsoluteSize;
+                        if Mouse.X < DPos.X or Mouse.X > DPos.X + DSize.X or Mouse.Y < DPos.Y or Mouse.Y > DPos.Y + DSize.Y then
+                            ListOuter.Visible = false;
+                            DropdownArrow.Text = '▼';
+                            Library.OpenedFrames[ListOuter] = nil;
+                        end
                     end;
                 end;
-
-                Dropdown.Value = nTable;
-            else
-                if (not Val) then
-                    Dropdown.Value = nil;
-                elseif table.find(Dropdown.Values, Val) then
-                    Dropdown.Value = Val;
-                end;
             end;
+        end))
 
-            Dropdown:BuildDropdownList();
-
-            Library:SafeCallback(Dropdown.Callback, Dropdown.Value);
-            Library:SafeCallback(Dropdown.Changed, Dropdown.Value);
-        end;
-
-        DropdownOuter.InputBegan:Connect(function(Input)
-            if Input.UserInputType == Enum.UserInputType.MouseButton1 and not Library:MouseIsOverOpenedFrame() then
-                if ListOuter.Visible then
-                    Dropdown:CloseDropdown();
-                else
-                    Dropdown:OpenDropdown();
-                end;
-            end;
-        end);
-
-        InputService.InputBegan:Connect(function(Input)
-            if Input.UserInputType == Enum.UserInputType.MouseButton1 then
-                local AbsPos, AbsSize = ListOuter.AbsolutePosition, ListOuter.AbsoluteSize;
-
-                if Mouse.X < AbsPos.X or Mouse.X > AbsPos.X + AbsSize.X
-                    or Mouse.Y < (AbsPos.Y - 20 - 1) or Mouse.Y > AbsPos.Y + AbsSize.Y then
-
-                    Dropdown:CloseDropdown();
-                end;
-            end;
-        end);
-
-        Dropdown:BuildDropdownList();
+        Dropdown:SetValues();
         Dropdown:Display();
-
-        local Defaults = {}
-
-        if type(Info.Default) == 'string' then
-            local Idx = table.find(Dropdown.Values, Info.Default)
-            if Idx then
-                table.insert(Defaults, Idx)
-            end
-        elseif type(Info.Default) == 'table' then
-            for _, Value in next, Info.Default do
-                local Idx = table.find(Dropdown.Values, Value)
-                if Idx then
-                    table.insert(Defaults, Idx)
-                end
-            end
-        elseif type(Info.Default) == 'number' and Dropdown.Values[Info.Default] ~= nil then
-            table.insert(Defaults, Info.Default)
-        end
-
-        if next(Defaults) then
-            for i = 1, #Defaults do
-                local Index = Defaults[i]
-                if Info.Multi then
-                    Dropdown.Value[Dropdown.Values[Index]] = true
-                else
-                    Dropdown.Value = Dropdown.Values[Index];
-                end
-
-                if (not Info.Multi) then break end
-            end
-
-            Dropdown:BuildDropdownList();
-            Dropdown:Display();
-        end
+        
+        local Default = Info.Default;
+        if Default then Dropdown:SetValue(Default); end;
 
         Groupbox:AddBlank(Info.BlankSize or 5);
         Groupbox:Resize();
