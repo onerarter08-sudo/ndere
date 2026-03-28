@@ -1354,8 +1354,7 @@ do
         return Label;
     end;
 
-    function Funcs:AddButton(...)
-        -- TODO: Eventually redo this
+function Funcs:AddButton(...)
         local Button = {};
         local function ProcessButtonParams(Class, Obj, ...)
             local Props = select(1, ...)
@@ -1368,7 +1367,6 @@ do
                 Obj.Text = select(1, ...)
                 Obj.Func = select(2, ...)
             end
-
             assert(type(Obj.Func) == 'function', 'AddButton: `Func` callback is missing.');
         end
 
@@ -1378,61 +1376,47 @@ do
         local Container = Groupbox.Container;
 
         local function CreateBaseButton(Button)
+            -- 1. Полностью залитая цветом акцента кнопка
             local Outer = Library:Create('Frame', {
-                BackgroundColor3 = Color3.new(0, 0, 0);
-                BorderColor3 = Color3.new(0, 0, 0);
-                Size = UDim2.new(1, -4, 0, 20);
+                BackgroundColor3 = Library.AccentColor; -- Фулл цвет акцента
+                BorderSizePixel = 0; -- Без аутлайнов
+                Size = UDim2.new(1, -4, 0, 24);
                 ZIndex = 5;
             });
 
-            local Inner = Library:Create('Frame', {
-                BackgroundColor3 = Library.MainColor;
-                BorderColor3 = Library.OutlineColor;
-                BorderMode = Enum.BorderMode.Inset;
+            Library:Create('UICorner', { CornerRadius = UDim.new(0, 4), Parent = Outer }); -- Скругление
+            Library:AddToRegistry(Outer, { BackgroundColor3 = 'AccentColor'; });
+
+            -- 2. Текст внутри кнопки
+            local Label = Library:CreateLabel({
                 Size = UDim2.new(1, 0, 1, 0);
+                TextSize = 13;
+                Text = Button.Text;
+                TextColor3 = Color3.fromRGB(255, 255, 255); -- Жестко белый цвет, чтобы читалось на любом акценте
                 ZIndex = 6;
                 Parent = Outer;
             });
 
-            local Label = Library:CreateLabel({
-                Size = UDim2.new(1, 0, 1, 0);
-                TextSize = 14;
-                Text = Button.Text;
-                ZIndex = 6;
-                Parent = Inner;
-            });
+            -- Отвязываем цвет текста от темы, чтобы он всегда был белым
+            if Library.RegistryMap[Label] then
+                Library.RegistryMap[Label].Properties.TextColor3 = nil;
+            end
 
-            Library:Create('UIGradient', {
-                Color = ColorSequence.new({
-                    ColorSequenceKeypoint.new(0, Color3.new(1, 1, 1)),
-                    ColorSequenceKeypoint.new(1, Color3.fromRGB(212, 212, 212))
-                });
-                Rotation = 90;
-                Parent = Inner;
-            });
+            -- 3. Приятная анимация (отклик) при наведении мыши
+            Outer.MouseEnter:Connect(function()
+                Outer.BackgroundTransparency = 0.15;
+            end)
+            Outer.MouseLeave:Connect(function()
+                Outer.BackgroundTransparency = 0;
+            end)
 
-            Library:AddToRegistry(Outer, {
-                BorderColor3 = 'Black';
-            });
-
-            Library:AddToRegistry(Inner, {
-                BackgroundColor3 = 'MainColor';
-                BorderColor3 = 'OutlineColor';
-            });
-
-            Library:OnHighlight(Outer, Outer,
-                { BorderColor3 = 'AccentColor' },
-                { BorderColor3 = 'Black' }
-            );
-
-            return Outer, Inner, Label
+            return Outer, Outer, Label
         end
 
         local function InitEvents(Button)
             local function WaitForEvent(event, timeout, validator)
                 local bindable = Instance.new('BindableEvent')
                 local connection = event:Once(function(...)
-
                     if type(validator) == 'function' and validator(...) then
                         bindable:Fire(true)
                     else
@@ -1447,14 +1431,8 @@ do
             end
 
             local function ValidateClick(Input)
-                if Library:MouseIsOverOpenedFrame() then
-                    return false
-                end
-
-                if Input.UserInputType ~= Enum.UserInputType.MouseButton1 then
-                    return false
-                end
-
+                if Library:MouseIsOverOpenedFrame() then return false end
+                if Input.UserInputType ~= Enum.UserInputType.MouseButton1 then return false end
                 return true
             end
 
@@ -1463,19 +1441,11 @@ do
                 if Button.Locked then return end
 
                 if Button.DoubleClick then
-                    Library:RemoveFromRegistry(Button.Label)
-                    Library:AddToRegistry(Button.Label, { TextColor3 = 'AccentColor' })
-
-                    Button.Label.TextColor3 = Library.AccentColor
                     Button.Label.Text = 'Are you sure?'
                     Button.Locked = true
 
                     local clicked = WaitForEvent(Button.Outer.InputBegan, 0.5, ValidateClick)
 
-                    Library:RemoveFromRegistry(Button.Label)
-                    Library:AddToRegistry(Button.Label, { TextColor3 = 'FontColor' })
-
-                    Button.Label.TextColor3 = Library.FontColor
                     Button.Label.Text = Button.Text
                     task.defer(rawset, Button, 'Locked', false)
 
@@ -1502,17 +1472,15 @@ do
             return self
         end
 
-
         function Button:AddButton(...)
             local SubButton = {}
-
             ProcessButtonParams('SubButton', SubButton, ...)
 
-            self.Outer.Size = UDim2.new(0.5, -2, 0, 20)
+            self.Outer.Size = UDim2.new(0.5, -2, 0, 24)
 
             SubButton.Outer, SubButton.Inner, SubButton.Label = CreateBaseButton(SubButton)
 
-            SubButton.Outer.Position = UDim2.new(1, 3, 0, 0)
+            SubButton.Outer.Position = UDim2.new(1, 4, 0, 0)
             SubButton.Outer.Size = UDim2.fromOffset(self.Outer.AbsoluteSize.X - 2, self.Outer.AbsoluteSize.Y)
             SubButton.Outer.Parent = self.Outer
 
@@ -2005,7 +1973,7 @@ function Funcs:AddSlider(Idx, Info)
 
         -- 6. Белый кружок (Ползунок)
         local SliderKnob = Library:Create('Frame', {
-            BackgroundColor3 = Library.AccentColor;
+            BackgroundColor3 = Color3.fromRGB(255, 255, 255);
             BorderSizePixel = 0;
             AnchorPoint = Vector2.new(0.5, 0.5); -- Центрируем
             Position = UDim2.new(1, 0, 0.5, 0); -- Крепим к правому краю SliderInner
