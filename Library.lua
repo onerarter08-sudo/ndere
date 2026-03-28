@@ -2751,19 +2751,30 @@ if Library.RegistryMap[WindowLabel] then
         Parent = Outer;
     });
 
+-- === ТОТ САМЫЙ "ВТОРОЙ БГ" ЗА ВСЕМИ ВКЛАДКАМИ ===
     local TabArea = Library:Create('Frame', {
-        BackgroundTransparency = 1;
-        Position = UDim2.new(0, 15, 0, 30);
-        Size = UDim2.new(1, -30, 1, -40);
+        BackgroundColor3 = Library.BackgroundColor, -- Фрейм цвета бг
+        BorderSizePixel = 0,
+        Position = UDim2.new(0, 10, 0, 30), -- Сдвинул чуть левее, чтобы смотрелось как панель
+        Size = UDim2.new(1, -20, 1, -40),
         ZIndex = 3;
         Parent = LeftPanel;
     });
+    Library:Create('UICorner', { CornerRadius = UDim.new(0, 6), Parent = TabArea });
+    Library:AddToRegistry(TabArea, { BackgroundColor3 = 'BackgroundColor' });
 
     local TabListLayout = Library:Create('UIListLayout', {
-        Padding = UDim.new(0, 5);
+        Padding = UDim.new(0, 2); -- Уменьшил отступ между кнопками
         FillDirection = Enum.FillDirection.Vertical;
         SortOrder = Enum.SortOrder.LayoutOrder;
+        HorizontalAlignment = Enum.HorizontalAlignment.Center; -- Центрируем вкладки
         Parent = TabArea;
+    });
+
+    -- Отступ сверху, чтобы первая вкладка не прилипала к потолку
+    Library:Create('UIPadding', {
+        PaddingTop = UDim.new(0, 6),
+        Parent = TabArea
     });
 
     local TabContainer = Library:Create('Frame', {
@@ -2782,13 +2793,17 @@ if Library.RegistryMap[WindowLabel] then
     function Window:AddTab(Name)
         local Tab = { Groupboxes = {}, Tabboxes = {} };
 
+        -- === САМА КНОПКА (САБТАБ), СДЕЛАЛИ МЕНЬШЕ ===
         local TabButton = Library:Create('Frame', {
-            BackgroundTransparency = 1,
+            BackgroundTransparency = 1, -- Изначально прозрачная
+            BackgroundColor3 = Library.MainColor, -- "Серый такой"
             BorderSizePixel = 0,
-            Size = UDim2.new(1, 0, 0, 30),
-            ZIndex = 1,
+            Size = UDim2.new(1, -12, 0, 24), -- Меньше размером (было 30 высоты, стало 24)
+            ZIndex = 4,
             Parent = TabArea;
         });
+        Library:Create('UICorner', { CornerRadius = UDim.new(0, 4), Parent = TabButton });
+        Library:AddToRegistry(TabButton, { BackgroundColor3 = 'MainColor' });
 
         local TabHighlight = Library:Create('Frame', {
             BackgroundColor3 = Library.AccentColor,
@@ -2796,7 +2811,7 @@ if Library.RegistryMap[WindowLabel] then
             Position = UDim2.new(0, 0, 0.5, -8),
             Size = UDim2.new(0, 2, 0, 16),
             Visible = false,
-            ZIndex = 2,
+            ZIndex = 5,
             Parent = TabButton;
         });
         Library:Create('UICorner', { CornerRadius = UDim.new(0, 2), Parent = TabHighlight });
@@ -2810,7 +2825,7 @@ if Library.RegistryMap[WindowLabel] then
             TextSize = 13,
             TextXAlignment = Enum.TextXAlignment.Left,
             TextColor3 = Color3.fromRGB(130, 130, 130),
-            ZIndex = 2,
+            ZIndex = 5,
             Parent = TabButton;
         });
 
@@ -2873,6 +2888,7 @@ if Library.RegistryMap[WindowLabel] then
         function Tab:ShowTab()
             for _, Tab in next, Window.Tabs do Tab:HideTab() end;
             TabHighlight.Visible = true;
+            TabButton.BackgroundTransparency = 0; -- ПОКАЗЫВАЕМ СЕРЫЙ ФОН ПРИ ВЫБОРЕ
             TabButtonLabel.TextColor3 = Library.FontColor;
             if not Library.RegistryMap[TabButtonLabel] then Library.RegistryMap[TabButtonLabel] = {Properties={}} end
             Library.RegistryMap[TabButtonLabel].Properties.TextColor3 = 'FontColor';
@@ -2881,6 +2897,7 @@ if Library.RegistryMap[WindowLabel] then
 
         function Tab:HideTab()
             TabHighlight.Visible = false;
+            TabButton.BackgroundTransparency = 1; -- УБИРАЕМ ФОН (сливается с БГ)
             TabButtonLabel.TextColor3 = Color3.fromRGB(130, 130, 130);
             if Library.RegistryMap[TabButtonLabel] then
                 Library.RegistryMap[TabButtonLabel].Properties.TextColor3 = nil;
