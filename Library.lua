@@ -2910,10 +2910,12 @@ local LeftSide = Library:Create('ScrollingFrame', {
 function Tab:ShowTab()
             for _, Tab in next, Window.Tabs do Tab:HideTab() end;
             TabHighlight.Visible = true;
-            TabButton.BackgroundTransparency = 0; 
+            
+            -- Оставляем кнопку прозрачной (раньше тут был 0)
+            TabButton.BackgroundTransparency = 1; 
             
             TabButtonLabel.TextColor3 = Library.FontColor;
-            if HasIcon then TabIcon.ImageColor3 = Library.FontColor end -- Иконка белеет
+            if HasIcon then TabIcon.ImageColor3 = Library.FontColor end
             
             if not Library.RegistryMap[TabButtonLabel] then Library.RegistryMap[TabButtonLabel] = {Properties={}} end
             Library.RegistryMap[TabButtonLabel].Properties.TextColor3 = 'FontColor';
@@ -2922,10 +2924,12 @@ function Tab:ShowTab()
 
         function Tab:HideTab()
             TabHighlight.Visible = false;
+            
+            -- Здесь тоже железно прозрачный фон
             TabButton.BackgroundTransparency = 1; 
             
             TabButtonLabel.TextColor3 = Color3.fromRGB(130, 130, 130);
-            if HasIcon then TabIcon.ImageColor3 = Color3.fromRGB(130, 130, 130) end -- Иконка сереет
+            if HasIcon then TabIcon.ImageColor3 = Color3.fromRGB(130, 130, 130) end
             
             if Library.RegistryMap[TabButtonLabel] then
                 Library.RegistryMap[TabButtonLabel].Properties.TextColor3 = nil;
