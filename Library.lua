@@ -2770,10 +2770,11 @@ local TabContainer = Library:Create('Frame', {
         AnchorPoint = Vector2.new(0, 0),
         BackgroundColor3 = Library.BackgroundColor,
         BorderSizePixel = 0,
-        -- Встаем ровно по твоим красным линиям:
-        Position = UDim2.new(0, 155, 0, 45), 
-        -- Заполняем всё до правого и нижнего края (с зазором 5px)
-        Size = UDim2.new(1, -160, 1, -50), 
+        -- Придвинули ближе: теперь отступ от табов всего 3px, а от верха 40px
+        Position = UDim2.new(0, 153, 0, 40), 
+        -- Растянули: теперь зазор справа и снизу тоже всего по 5 пикселей
+        -- (153 + 5 зазор справа = 158; 40 + 5 зазор снизу = 45)
+        Size = UDim2.new(1, -158, 1, -45), 
         ClipsDescendants = true,
         ZIndex = 1;
         Parent = Outer;
