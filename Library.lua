@@ -1392,7 +1392,7 @@ function Funcs:AddButton(...)
                 Size = UDim2.new(1, 0, 1, 0);
                 TextSize = 13;
                 Text = Button.Text;
-                TextColor3 = Color3.fromRGB(255, 255, 255); -- Жестко белый цвет, чтобы читалось на любом акценте
+                TextColor3 = Color3.fromRGB(0, 0, 0); -- Жестко белый цвет, чтобы читалось на любом акценте
                 ZIndex = 6;
                 Parent = Outer;
             });
