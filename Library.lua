@@ -2382,11 +2382,42 @@ function Funcs:AddDropdown(Idx, Info)
             end;
         end))
 
-        Dropdown:SetValues();
+Dropdown:SetValues();
         Dropdown:Display();
-        
-        local Default = Info.Default;
-        if Default then Dropdown:SetValue(Default); end;
+
+        local Defaults = {}
+
+        if type(Info.Default) == 'string' then
+            local Idx = table.find(Dropdown.Values, Info.Default)
+            if Idx then
+                table.insert(Defaults, Idx)
+            end
+        elseif type(Info.Default) == 'table' then
+            for _, Value in next, Info.Default do
+                local Idx = table.find(Dropdown.Values, Value)
+                if Idx then
+                    table.insert(Defaults, Idx)
+                end
+            end
+        elseif type(Info.Default) == 'number' and Dropdown.Values[Info.Default] ~= nil then
+            table.insert(Defaults, Info.Default)
+        end
+
+        if next(Defaults) then
+            for i = 1, #Defaults do
+                local Index = Defaults[i]
+                if Info.Multi then
+                    Dropdown.Value[Dropdown.Values[Index]] = true
+                else
+                    Dropdown.Value = Dropdown.Values[Index];
+                end
+
+                if (not Info.Multi) then break end
+            end
+
+            Dropdown:BuildDropdownList();
+            Dropdown:Display();
+        end
 
         Groupbox:AddBlank(Info.BlankSize or 5);
         Groupbox:Resize();
