@@ -2326,24 +2326,8 @@ function Funcs:AddDropdown(Idx, Info)
             Dropdown:Display();
         end;
 
-        function Dropdown:SetValue(Val)
-            if Dropdown.Multi then
-                local nTable = {};
-                for Value, Bool in next, Val do
-                    if table.find(Dropdown.Values, Value) then nTable[Value] = true end;
-                end;
-                Dropdown.Value = nTable;
-            else
-                if not Val then Dropdown.Value = '';
-                elseif table.find(Dropdown.Values, Val) then Dropdown.Value = Val; end;
-            end;
-
-            Dropdown:BuildDropdownList();
-            Dropdown:Display();
-
-            Library:SafeCallback(Dropdown.Callback, Dropdown.Value);
-            Library:SafeCallback(Dropdown.Changed, Dropdown.Value);
-        end;
+        local Default = Info.Default;
+        if Default then Dropdown:SetValue(Default); end;
 
         function Dropdown:OnChanged(Func)
             Dropdown.Changed = Func;
