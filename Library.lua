@@ -1029,13 +1029,17 @@ function Funcs:AddKeyPicker(Idx, Info)
         local DisplayLabel = Library:CreateLabel({
             Size = UDim2.new(1, 0, 1, 0);
             TextSize = 13;
-            -- Если бинда нет (None), пишем '=', иначе саму кнопку
             Text = Info.Default == 'None' and '=' or Info.Default;
-            TextColor3 = Color3.fromRGB(130, 130, 130); -- Тусклый серый цвет (как в Kamidere)
-            TextXAlignment = Enum.TextXAlignment.Right; -- Прижимаем текст вправо к чекбоксу
+            TextColor3 = Color3.fromRGB(55, 55, 55); -- Ставим твой темно-серый цвет
+            TextXAlignment = Enum.TextXAlignment.Right;
             ZIndex = 8;
             Parent = PickOuter;
         });
+
+        -- ОТВЯЗЫВАЕМ ОТ ТЕМЫ (чтобы ThemeManager не красил его в белый)
+        if Library.RegistryMap[DisplayLabel] then
+            Library.RegistryMap[DisplayLabel].Properties.TextColor3 = nil;
+        end
 
         -- Меню выбора мода (Hold, Toggle, Always)
         local ModeSelectOuter = Library:Create('Frame', {
