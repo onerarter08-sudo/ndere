@@ -133,8 +133,8 @@ function Library:Create(Class, Properties)
 end;
 
 function Library:ApplyTextStroke(Inst)
-    -- Мы просто оставляем эту функцию пустой!
-    -- Теперь никаких уродливых черных контуров (UIStroke) вокруг текста.
+    -- РњС‹ РїСЂРѕСЃС‚Рѕ РѕСЃС‚Р°РІР»СЏРµРј СЌС‚Сѓ С„СѓРЅРєС†РёСЋ РїСѓСЃС‚РѕР№!
+    -- РўРµРїРµСЂСЊ РЅРёРєР°РєРёС… СѓСЂРѕРґР»РёРІС‹С… С‡РµСЂРЅС‹С… РєРѕРЅС‚СѓСЂРѕРІ (UIStroke) РІРѕРєСЂСѓРі С‚РµРєСЃС‚Р°.
 end;
 
 function Library:CreateLabel(Properties, IsHud)
@@ -143,7 +143,7 @@ function Library:CreateLabel(Properties, IsHud)
         Font = Library.Font;
         TextColor3 = Library.FontColor;
         TextSize = 16;
-        TextStrokeTransparency = 1; -- СТАВИМ 1, чтобы полностью убрать стандартную тень
+        TextStrokeTransparency = 1; -- РЎРўРђР’РРњ 1, С‡С‚РѕР±С‹ РїРѕР»РЅРѕСЃС‚СЊСЋ СѓР±СЂР°С‚СЊ СЃС‚Р°РЅРґР°СЂС‚РЅСѓСЋ С‚РµРЅСЊ
     });
 
     Library:ApplyTextStroke(_Instance);
@@ -1016,32 +1016,32 @@ function Funcs:AddKeyPicker(Idx, Info)
             Info.Mode = 'Toggle'
         end
 
-        -- 1. Прозрачный контейнер (никаких черных рамок!)
+        -- 1. РџСЂРѕР·СЂР°С‡РЅС‹Р№ РєРѕРЅС‚РµР№РЅРµСЂ (РЅРёРєР°РєРёС… С‡РµСЂРЅС‹С… СЂР°РјРѕРє!)
         local PickOuter = Library:Create('Frame', {
             BackgroundTransparency = 1;
             BorderSizePixel = 0;
-            Size = UDim2.new(0, 40, 0, 15); -- Фиксированная ширина, чтобы текст не прыгал
+            Size = UDim2.new(0, 40, 0, 15); -- Р¤РёРєСЃРёСЂРѕРІР°РЅРЅР°СЏ С€РёСЂРёРЅР°, С‡С‚РѕР±С‹ С‚РµРєСЃС‚ РЅРµ РїСЂС‹РіР°Р»
             ZIndex = 6;
             Parent = ToggleLabel;
         });
 
-        -- 2. Сам текст кейбинда
+        -- 2. РЎР°Рј С‚РµРєСЃС‚ РєРµР№Р±РёРЅРґР°
         local DisplayLabel = Library:CreateLabel({
             Size = UDim2.new(1, 0, 1, 0);
             TextSize = 13;
             Text = Info.Default == 'None' and '=' or Info.Default;
-            TextColor3 = Color3.fromRGB(55, 55, 55); -- Ставим твой темно-серый цвет
+            TextColor3 = Color3.fromRGB(55, 55, 55); -- РЎС‚Р°РІРёРј С‚РІРѕР№ С‚РµРјРЅРѕ-СЃРµСЂС‹Р№ С†РІРµС‚
             TextXAlignment = Enum.TextXAlignment.Right;
             ZIndex = 8;
             Parent = PickOuter;
         });
 
-        -- ОТВЯЗЫВАЕМ ОТ ТЕМЫ (чтобы ThemeManager не красил его в белый)
+        -- РћРўР’РЇР—Р«Р’РђР•Рњ РћРў РўР•РњР« (С‡С‚РѕР±С‹ ThemeManager РЅРµ РєСЂР°СЃРёР» РµРіРѕ РІ Р±РµР»С‹Р№)
         if Library.RegistryMap[DisplayLabel] then
             Library.RegistryMap[DisplayLabel].Properties.TextColor3 = nil;
         end
 
-        -- Меню выбора мода (Hold, Toggle, Always)
+        -- РњРµРЅСЋ РІС‹Р±РѕСЂР° РјРѕРґР° (Hold, Toggle, Always)
         local ModeSelectOuter = Library:Create('Frame', {
             BackgroundColor3 = Library.OutlineColor;
             BorderSizePixel = 0;
@@ -1168,7 +1168,7 @@ function Funcs:AddKeyPicker(Idx, Info)
 
         function KeyPicker:SetValue(Data)
             local Key, Mode = Data[1], Data[2];
-            DisplayLabel.Text = Key == 'None' and '=' or Key; -- Заменяем None на =
+            DisplayLabel.Text = Key == 'None' and '=' or Key; -- Р—Р°РјРµРЅСЏРµРј None РЅР° =
             KeyPicker.Value = Key;
             ModeButtons[Mode]:Select();
             KeyPicker:Update();
@@ -1226,7 +1226,7 @@ function Funcs:AddKeyPicker(Idx, Info)
                     Break = true;
                     Picking = false;
 
-                    DisplayLabel.Text = Key == 'None' and '=' or Key; -- Применяем магию '='
+                    DisplayLabel.Text = Key == 'None' and '=' or Key; -- РџСЂРёРјРµРЅСЏРµРј РјР°РіРёСЋ '='
                     KeyPicker.Value = Key;
 
                     Library:SafeCallback(KeyPicker.ChangedCallback, Input.KeyCode or Input.UserInputType)
@@ -1394,14 +1394,14 @@ function Funcs:AddButton(...)
                 Parent = Outer;
             });
 
-            -- ЖЕСТКИЙ ФИКС ЦВЕТА:
-            -- 1. Удаляем текст из старого реестра (где он был белым)
+            -- Р–Р•РЎРўРљРР™ Р¤РРљРЎ Р¦Р’Р•РўРђ:
+            -- 1. РЈРґР°Р»СЏРµРј С‚РµРєСЃС‚ РёР· СЃС‚Р°СЂРѕРіРѕ СЂРµРµСЃС‚СЂР° (РіРґРµ РѕРЅ Р±С‹Р» Р±РµР»С‹Рј)
             Library:RemoveFromRegistry(Label)
             
-            -- 2. Красим его в темный цвет меню
+            -- 2. РљСЂР°СЃРёРј РµРіРѕ РІ С‚РµРјРЅС‹Р№ С†РІРµС‚ РјРµРЅСЋ
             Label.TextColor3 = Library.MainColor
             
-            -- 3. Добавляем обратно в реестр, но уже с привязкой к MainColor!
+            -- 3. Р”РѕР±Р°РІР»СЏРµРј РѕР±СЂР°С‚РЅРѕ РІ СЂРµРµСЃС‚СЂ, РЅРѕ СѓР¶Рµ СЃ РїСЂРёРІСЏР·РєРѕР№ Рє MainColor!
             Library:AddToRegistry(Label, { TextColor3 = 'MainColor' })
 
             Outer.MouseEnter:Connect(function()
@@ -1563,7 +1563,7 @@ function Funcs:AddInput(Idx, Info)
         local Groupbox = self;
         local Container = Groupbox.Container;
 
-        -- 1. Общий прозрачный контейнер (высота 24px, как у дропдауна)
+        -- 1. РћР±С‰РёР№ РїСЂРѕР·СЂР°С‡РЅС‹Р№ РєРѕРЅС‚РµР№РЅРµСЂ (РІС‹СЃРѕС‚Р° 24px, РєР°Рє Сѓ РґСЂРѕРїРґР°СѓРЅР°)
         local InputContainer = Library:Create('Frame', {
             BackgroundTransparency = 1;
             Size = UDim2.new(1, -4, 0, 24);
@@ -1571,7 +1571,7 @@ function Funcs:AddInput(Idx, Info)
             Parent = Container;
         });
 
-        -- 2. Текст названия (Слева)
+        -- 2. РўРµРєСЃС‚ РЅР°Р·РІР°РЅРёСЏ (РЎР»РµРІР°)
         local InputLabel = Library:CreateLabel({
             Size = UDim2.new(0.5, 0, 1, 0);
             Position = UDim2.new(0, 0, 0, 0);
@@ -1582,9 +1582,9 @@ function Funcs:AddInput(Idx, Info)
             Parent = InputContainer;
         });
 
-        -- 3. Фон самого инпута (Справа)
+        -- 3. Р¤РѕРЅ СЃР°РјРѕРіРѕ РёРЅРїСѓС‚Р° (РЎРїСЂР°РІР°)
         local TextBoxOuter = Library:Create('Frame', {
-            BackgroundColor3 = Library.BackgroundColor; -- Цвет как у дропдауна
+            BackgroundColor3 = Library.BackgroundColor; -- Р¦РІРµС‚ РєР°Рє Сѓ РґСЂРѕРїРґР°СѓРЅР°
             BorderSizePixel = 0;
             Position = UDim2.new(0.5, 0, 0, 0);
             Size = UDim2.new(0.5, 0, 1, 0);
@@ -1595,7 +1595,7 @@ function Funcs:AddInput(Idx, Info)
         Library:Create('UICorner', { CornerRadius = UDim.new(0, 4), Parent = TextBoxOuter });
         Library:AddToRegistry(TextBoxOuter, { BackgroundColor3 = 'BackgroundColor'; });
 
-        -- 4. Акцентная линия снизу (Топбар снизу)
+        -- 4. РђРєС†РµРЅС‚РЅР°СЏ Р»РёРЅРёСЏ СЃРЅРёР·Сѓ (РўРѕРїР±Р°СЂ СЃРЅРёР·Сѓ)
         local InputHighlight = Library:Create('Frame', {
             BackgroundColor3 = Library.AccentColor;
             BorderSizePixel = 0;
@@ -1608,28 +1608,28 @@ function Funcs:AddInput(Idx, Info)
         Library:Create('UICorner', { CornerRadius = UDim.new(0, 4), Parent = InputHighlight });
         Library:AddToRegistry(InputHighlight, { BackgroundColor3 = 'AccentColor'; });
 
-        -- 5. Контейнер для обрезки длинного текста
+        -- 5. РљРѕРЅС‚РµР№РЅРµСЂ РґР»СЏ РѕР±СЂРµР·РєРё РґР»РёРЅРЅРѕРіРѕ С‚РµРєСЃС‚Р°
         local ContainerBox = Library:Create('Frame', {
             BackgroundTransparency = 1;
             ClipsDescendants = true;
-            Position = UDim2.new(0, 8, 0, 0); -- Отступ слева 8px, чтобы текст не прилипал к краю
+            Position = UDim2.new(0, 8, 0, 0); -- РћС‚СЃС‚СѓРї СЃР»РµРІР° 8px, С‡С‚РѕР±С‹ С‚РµРєСЃС‚ РЅРµ РїСЂРёР»РёРїР°Р» Рє РєСЂР°СЋ
             Size = UDim2.new(1, -16, 1, 0);
             ZIndex = 7;
             Parent = TextBoxOuter;
         });
 
-        -- 6. Сам TextBox (Поле ввода)
+        -- 6. РЎР°Рј TextBox (РџРѕР»Рµ РІРІРѕРґР°)
         local Box = Library:Create('TextBox', {
             BackgroundTransparency = 1;
             Position = UDim2.fromOffset(0, 0),
             Size = UDim2.fromScale(5, 1),
             Font = Library.Font;
-            PlaceholderColor3 = Color3.fromRGB(110, 110, 110); -- Темно-серый пример текста!
+            PlaceholderColor3 = Color3.fromRGB(110, 110, 110); -- РўРµРјРЅРѕ-СЃРµСЂС‹Р№ РїСЂРёРјРµСЂ С‚РµРєСЃС‚Р°!
             PlaceholderText = Info.Placeholder or '';
             Text = Info.Default or '';
             TextColor3 = Library.FontColor;
             TextSize = 13;
-            TextStrokeTransparency = 1; -- Никаких черных контуров
+            TextStrokeTransparency = 1; -- РќРёРєР°РєРёС… С‡РµСЂРЅС‹С… РєРѕРЅС‚СѓСЂРѕРІ
             TextXAlignment = Enum.TextXAlignment.Left;
             ZIndex = 7;
             Parent = ContainerBox;
@@ -1724,17 +1724,17 @@ function Funcs:AddToggle(Idx, Info)
         local Groupbox = self;
         local Container = Groupbox.Container;
 
-        -- 1. Главный невидимый контейнер для всей строки
+        -- 1. Р“Р»Р°РІРЅС‹Р№ РЅРµРІРёРґРёРјС‹Р№ РєРѕРЅС‚РµР№РЅРµСЂ РґР»СЏ РІСЃРµР№ СЃС‚СЂРѕРєРё
         local ToggleContainer = Library:Create('Frame', {
             BackgroundTransparency = 1;
-            Size = UDim2.new(1, -4, 0, 15); -- Высота строки 15px
+            Size = UDim2.new(1, -4, 0, 15); -- Р’С‹СЃРѕС‚Р° СЃС‚СЂРѕРєРё 15px
             ZIndex = 5;
             Parent = Container;
         });
 
-        -- 2. Текст тоггла (прижат влево)
+        -- 2. РўРµРєСЃС‚ С‚РѕРіРіР»Р° (РїСЂРёР¶Р°С‚ РІР»РµРІРѕ)
         local ToggleLabel = Library:CreateLabel({
-            Size = UDim2.new(1, -24, 1, 0); -- Занимает всю ширину МИНУС место под квадратик
+            Size = UDim2.new(1, -24, 1, 0); -- Р—Р°РЅРёРјР°РµС‚ РІСЃСЋ С€РёСЂРёРЅСѓ РњРРќРЈРЎ РјРµСЃС‚Рѕ РїРѕРґ РєРІР°РґСЂР°С‚РёРє
             Position = UDim2.new(0, 0, 0, 0);
             TextSize = 13,
             Text = Info.Text;
@@ -1743,7 +1743,7 @@ function Funcs:AddToggle(Idx, Info)
             Parent = ToggleContainer;
         });
 
-        -- Это нужно для того, чтобы колорпикеры и бинды спавнились ровно слева от чекбокса
+        -- Р­С‚Рѕ РЅСѓР¶РЅРѕ РґР»СЏ С‚РѕРіРѕ, С‡С‚РѕР±С‹ РєРѕР»РѕСЂРїРёРєРµСЂС‹ Рё Р±РёРЅРґС‹ СЃРїР°РІРЅРёР»РёСЃСЊ СЂРѕРІРЅРѕ СЃР»РµРІР° РѕС‚ С‡РµРєР±РѕРєСЃР°
         Library:Create('UIListLayout', {
             Padding = UDim.new(0, 4);
             FillDirection = Enum.FillDirection.Horizontal;
@@ -1752,13 +1752,13 @@ function Funcs:AddToggle(Idx, Info)
             Parent = ToggleLabel;
         });
 
-        -- 3. Квадратик (Внешняя обводка), прижат к ПРАВОМУ краю!
+        -- 3. РљРІР°РґСЂР°С‚РёРє (Р’РЅРµС€РЅСЏСЏ РѕР±РІРѕРґРєР°), РїСЂРёР¶Р°С‚ Рє РџР РђР’РћРњРЈ РєСЂР°СЋ!
         local ToggleOuter = Library:Create('Frame', {
             BackgroundColor3 = Library.OutlineColor;
             BorderSizePixel = 0;
-            AnchorPoint = Vector2.new(1, 0.5); -- Якорь по центру справа
-            Position = UDim2.new(1, 0, 0.5, 0); -- Прижимаем в правый край
-            Size = UDim2.new(0, 14, 0, 14); -- ЖЕСТКИЙ РАЗМЕР (не будет растягиваться)
+            AnchorPoint = Vector2.new(1, 0.5); -- РЇРєРѕСЂСЊ РїРѕ С†РµРЅС‚СЂСѓ СЃРїСЂР°РІР°
+            Position = UDim2.new(1, 0, 0.5, 0); -- РџСЂРёР¶РёРјР°РµРј РІ РїСЂР°РІС‹Р№ РєСЂР°Р№
+            Size = UDim2.new(0, 14, 0, 14); -- Р–Р•РЎРўРљРР™ Р РђР—РњР•Р  (РЅРµ Р±СѓРґРµС‚ СЂР°СЃС‚СЏРіРёРІР°С‚СЊСЃСЏ)
             ZIndex = 5;
             Parent = ToggleContainer;
         });
@@ -1772,13 +1772,13 @@ function Funcs:AddToggle(Idx, Info)
             BackgroundColor3 = 'OutlineColor';
         });
 
-        -- 4. Заливка квадратика (Внутренняя часть)
+        -- 4. Р—Р°Р»РёРІРєР° РєРІР°РґСЂР°С‚РёРєР° (Р’РЅСѓС‚СЂРµРЅРЅСЏСЏ С‡Р°СЃС‚СЊ)
         local ToggleInner = Library:Create('Frame', {
             BackgroundColor3 = Library.MainColor;
             BorderSizePixel = 0;
             AnchorPoint = Vector2.new(0.5, 0.5);
             Position = UDim2.new(0.5, 0, 0.5, 0);
-            Size = UDim2.new(1, -2, 1, -2); -- Ровно на 1px меньше рамки
+            Size = UDim2.new(1, -2, 1, -2); -- Р РѕРІРЅРѕ РЅР° 1px РјРµРЅСЊС€Рµ СЂР°РјРєРё
             ZIndex = 6;
             Parent = ToggleOuter;
         });
@@ -1792,7 +1792,7 @@ function Funcs:AddToggle(Idx, Info)
             BackgroundColor3 = 'MainColor';
         });
 
-        -- Невидимая кнопка поверх всей строки для регистрации кликов
+        -- РќРµРІРёРґРёРјР°СЏ РєРЅРѕРїРєР° РїРѕРІРµСЂС… РІСЃРµР№ СЃС‚СЂРѕРєРё РґР»СЏ СЂРµРіРёСЃС‚СЂР°С†РёРё РєР»РёРєРѕРІ
         local ToggleRegion = Library:Create('Frame', {
             BackgroundTransparency = 1;
             Size = UDim2.new(1, 0, 1, 0);
@@ -1809,7 +1809,7 @@ function Funcs:AddToggle(Idx, Info)
         end
 
         function Toggle:Display()
-            -- При включении квадратик полностью заливается цветом акцента
+            -- РџСЂРё РІРєР»СЋС‡РµРЅРёРё РєРІР°РґСЂР°С‚РёРє РїРѕР»РЅРѕСЃС‚СЊСЋ Р·Р°Р»РёРІР°РµС‚СЃСЏ С†РІРµС‚РѕРј Р°РєС†РµРЅС‚Р°
             ToggleInner.BackgroundColor3 = Toggle.Value and Library.AccentColor or Library.MainColor;
             ToggleOuter.BackgroundColor3 = Toggle.Value and Library.AccentColor or Library.OutlineColor;
 
@@ -1887,45 +1887,45 @@ function Funcs:AddSlider(Idx, Info)
         local Groupbox = self;
         local Container = Groupbox.Container;
 
-        -- 1. Общий прозрачный контейнер
+        -- 1. РћР±С‰РёР№ РїСЂРѕР·СЂР°С‡РЅС‹Р№ РєРѕРЅС‚РµР№РЅРµСЂ
         local SliderContainer = Library:Create('Frame', {
             BackgroundTransparency = 1;
             BorderSizePixel = 0;
-            Size = UDim2.new(1, -4, 0, 30); -- Жесткая высота под текст и ползунок
+            Size = UDim2.new(1, -4, 0, 30); -- Р–РµСЃС‚РєР°СЏ РІС‹СЃРѕС‚Р° РїРѕРґ С‚РµРєСЃС‚ Рё РїРѕР»Р·СѓРЅРѕРє
             ZIndex = 5;
             Parent = Container;
         });
 
-        -- 2. Текст названия (Слева сверху)
+        -- 2. РўРµРєСЃС‚ РЅР°Р·РІР°РЅРёСЏ (РЎР»РµРІР° СЃРІРµСЂС…Сѓ)
         local SliderLabel = Library:CreateLabel({
             Size = UDim2.new(0.5, 0, 0, 14);
             Position = UDim2.new(0, 0, 0, 0);
             TextSize = 13;
             Text = Info.Text;
-            TextXAlignment = Enum.TextXAlignment.Left; -- Прижат влево
+            TextXAlignment = Enum.TextXAlignment.Left; -- РџСЂРёР¶Р°С‚ РІР»РµРІРѕ
             ZIndex = 6;
             Parent = SliderContainer;
         });
 
-        -- 3. Текст цифр (Справа сверху, на уровне названия)
+        -- 3. РўРµРєСЃС‚ С†РёС„СЂ (РЎРїСЂР°РІР° СЃРІРµСЂС…Сѓ, РЅР° СѓСЂРѕРІРЅРµ РЅР°Р·РІР°РЅРёСЏ)
         local SliderValueLabel = Library:CreateLabel({
             Size = UDim2.new(0.5, 0, 0, 14);
             Position = UDim2.new(0.5, 0, 0, 0);
             TextSize = 13;
             Text = tostring(Info.Default) .. (Info.Suffix or '');
-            TextXAlignment = Enum.TextXAlignment.Right; -- Прижат вправо
+            TextXAlignment = Enum.TextXAlignment.Right; -- РџСЂРёР¶Р°С‚ РІРїСЂР°РІРѕ
             ZIndex = 6;
             Parent = SliderContainer;
         });
 
-        -- 4. Тонкая серая линия (Фон)
+        -- 4. РўРѕРЅРєР°СЏ СЃРµСЂР°СЏ Р»РёРЅРёСЏ (Р¤РѕРЅ)
         local SliderOuter = Library:Create('Frame', {
             BackgroundColor3 = Library.OutlineColor;
             BorderSizePixel = 0;
-            BorderMode = Enum.BorderMode.Outline; -- Глушим встроенные черные рамки
-            ClipsDescendants = false; -- ВАЖНО: чтобы кружок не обрезался!
-            Position = UDim2.new(0, 0, 0, 22); -- Опустили под текст
-            Size = UDim2.new(1, 0, 0, 4); -- ТОЛЩИНА 4 ПИКСЕЛЯ!
+            BorderMode = Enum.BorderMode.Outline; -- Р“Р»СѓС€РёРј РІСЃС‚СЂРѕРµРЅРЅС‹Рµ С‡РµСЂРЅС‹Рµ СЂР°РјРєРё
+            ClipsDescendants = false; -- Р’РђР–РќРћ: С‡С‚РѕР±С‹ РєСЂСѓР¶РѕРє РЅРµ РѕР±СЂРµР·Р°Р»СЃСЏ!
+            Position = UDim2.new(0, 0, 0, 22); -- РћРїСѓСЃС‚РёР»Рё РїРѕРґ С‚РµРєСЃС‚
+            Size = UDim2.new(1, 0, 0, 4); -- РўРћР›Р©РРќРђ 4 РџРРљРЎР•Р›РЇ!
             ZIndex = 5;
             Parent = SliderContainer;
         });
@@ -1933,12 +1933,12 @@ function Funcs:AddSlider(Idx, Info)
         Library:Create('UICorner', { CornerRadius = UDim.new(0, 4), Parent = SliderOuter });
         Library:AddToRegistry(SliderOuter, { BackgroundColor3 = 'OutlineColor'; });
 
-        -- 5. Цветная полоска (Заливка)
+        -- 5. Р¦РІРµС‚РЅР°СЏ РїРѕР»РѕСЃРєР° (Р—Р°Р»РёРІРєР°)
         local SliderInner = Library:Create('Frame', {
             BackgroundColor3 = Library.AccentColor;
             BorderSizePixel = 0;
             BorderMode = Enum.BorderMode.Outline;
-            ClipsDescendants = false; -- ВАЖНО: чтобы кружок не обрезался!
+            ClipsDescendants = false; -- Р’РђР–РќРћ: С‡С‚РѕР±С‹ РєСЂСѓР¶РѕРє РЅРµ РѕР±СЂРµР·Р°Р»СЃСЏ!
             Position = UDim2.new(0, 0, 0, 0);
             Size = UDim2.new(0, 0, 1, 0);
             ZIndex = 6;
@@ -1948,20 +1948,20 @@ function Funcs:AddSlider(Idx, Info)
         Library:Create('UICorner', { CornerRadius = UDim.new(0, 4), Parent = SliderInner });
         Library:AddToRegistry(SliderInner, { BackgroundColor3 = 'AccentColor'; });
 
-        -- 6. Белый кружок (Ползунок)
+        -- 6. Р‘РµР»С‹Р№ РєСЂСѓР¶РѕРє (РџРѕР»Р·СѓРЅРѕРє)
         local SliderKnob = Library:Create('Frame', {
             BackgroundColor3 = Color3.fromRGB(255, 255, 255);
             BorderSizePixel = 0;
-            AnchorPoint = Vector2.new(0.5, 0.5); -- Центрируем
-            Position = UDim2.new(1, 0, 0.5, 0); -- Крепим к правому краю SliderInner
-            Size = UDim2.new(0, 10, 0, 10); -- Размер кружка
+            AnchorPoint = Vector2.new(0.5, 0.5); -- Р¦РµРЅС‚СЂРёСЂСѓРµРј
+            Position = UDim2.new(1, 0, 0.5, 0); -- РљСЂРµРїРёРј Рє РїСЂР°РІРѕРјСѓ РєСЂР°СЋ SliderInner
+            Size = UDim2.new(0, 10, 0, 10); -- Р Р°Р·РјРµСЂ РєСЂСѓР¶РєР°
             ZIndex = 7;
             Parent = SliderInner;
         });
 
         Library:Create('UICorner', { CornerRadius = UDim.new(1, 0), Parent = SliderKnob });
 
-        -- 7. Невидимая зона для перетаскивания
+        -- 7. РќРµРІРёРґРёРјР°СЏ Р·РѕРЅР° РґР»СЏ РїРµСЂРµС‚Р°СЃРєРёРІР°РЅРёСЏ
         local SliderInteract = Library:Create('TextButton', {
             BackgroundTransparency = 1;
             Position = UDim2.new(0, 0, 0, 14);
@@ -1990,7 +1990,7 @@ function Funcs:AddSlider(Idx, Info)
             SliderValueLabel.Text = tostring(Num) .. (Info.Suffix or '');
 
             local Percent = (Num - Info.Min) / (Info.Max - Info.Min);
-            -- Плавная анимация линии
+            -- РџР»Р°РІРЅР°СЏ Р°РЅРёРјР°С†РёСЏ Р»РёРЅРёРё
             TweenService:Create(SliderInner, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
                 Size = UDim2.new(Percent, 0, 1, 0)
             }):Play();
@@ -2052,7 +2052,7 @@ function Funcs:AddDropdown(Idx, Info)
         local Groupbox = self;
         local Container = Groupbox.Container;
 
-        -- 1. Контейнер
+        -- 1. РљРѕРЅС‚РµР№РЅРµСЂ
         local DropdownContainer = Library:Create('Frame', {
             BackgroundTransparency = 1;
             Size = UDim2.new(1, -4, 0, 24);
@@ -2060,7 +2060,7 @@ function Funcs:AddDropdown(Idx, Info)
             Parent = Container;
         });
 
-        -- 2. Текст слева
+        -- 2. РўРµРєСЃС‚ СЃР»РµРІР°
         local DropdownLabel = Library:CreateLabel({
             Size = UDim2.new(0.5, 0, 1, 0);
             Position = UDim2.new(0, 0, 0, 0);
@@ -2071,7 +2071,7 @@ function Funcs:AddDropdown(Idx, Info)
             Parent = DropdownContainer;
         });
 
-        -- 3. Кнопка справа
+        -- 3. РљРЅРѕРїРєР° СЃРїСЂР°РІР°
         local DropdownOuter = Library:Create('Frame', {
             BackgroundColor3 = Library.BackgroundColor;
             BorderSizePixel = 0;
@@ -2084,7 +2084,7 @@ function Funcs:AddDropdown(Idx, Info)
         Library:Create('UICorner', { CornerRadius = UDim.new(0, 4), Parent = DropdownOuter });
         Library:AddToRegistry(DropdownOuter, { BackgroundColor3 = 'BackgroundColor'; });
 
-        -- 4. Линия снизу
+        -- 4. Р›РёРЅРёСЏ СЃРЅРёР·Сѓ
         local DropdownHighlight = Library:Create('Frame', {
             BackgroundColor3 = Library.AccentColor;
             BorderSizePixel = 0;
@@ -2097,7 +2097,7 @@ function Funcs:AddDropdown(Idx, Info)
         Library:Create('UICorner', { CornerRadius = UDim.new(0, 4), Parent = DropdownHighlight });
         Library:AddToRegistry(DropdownHighlight, { BackgroundColor3 = 'AccentColor'; });
 
-        -- 5. Текст значения
+        -- 5. РўРµРєСЃС‚ Р·РЅР°С‡РµРЅРёСЏ
         local DropdownInnerLabel = Library:CreateLabel({
             Size = UDim2.new(1, -20, 1, 0);
             Position = UDim2.new(0, 8, 0, 0);
@@ -2109,12 +2109,12 @@ function Funcs:AddDropdown(Idx, Info)
             Parent = DropdownOuter;
         });
 
-        -- 6. Стрелочка
+        -- 6. РЎС‚СЂРµР»РѕС‡РєР°
         local DropdownArrow = Library:CreateLabel({
             Size = UDim2.new(0, 20, 1, 0);
             Position = UDim2.new(1, -20, 0, 0);
             TextSize = 10;
-            Text = '▼';
+            Text = 'в–ј';
             TextColor3 = Color3.fromRGB(150, 150, 150);
             ZIndex = 6;
             Parent = DropdownOuter;
@@ -2128,7 +2128,7 @@ function Funcs:AddDropdown(Idx, Info)
             Parent = DropdownOuter;
         });
 
-        -- === Выпадающий список ===
+        -- === Р’С‹РїР°РґР°СЋС‰РёР№ СЃРїРёСЃРѕРє ===
         local ListOuter = Library:Create('Frame', {
             BackgroundColor3 = Library.BackgroundColor;
             BorderSizePixel = 0;
@@ -2167,7 +2167,7 @@ function Funcs:AddDropdown(Idx, Info)
             Parent = ScrollingFrame;
         });
 
-        -- === ФУНКЦИИ ЛОГИКИ ===
+        -- === Р¤РЈРќРљР¦РР Р›РћР“РРљР ===
         function Dropdown:Display()
             local Values = Dropdown.Values;
             local Str = '';
@@ -2249,7 +2249,7 @@ function Funcs:AddDropdown(Idx, Info)
                             Dropdown.Value = Value;
                             Dropdown:SetValue(Dropdown.Value);
                             ListOuter.Visible = false;
-                            DropdownArrow.Text = '▼';
+                            DropdownArrow.Text = 'в–ј';
                             Library.OpenedFrames[ListOuter] = nil;
                         end;
                         Library:AttemptSave();
@@ -2308,7 +2308,7 @@ function Funcs:AddDropdown(Idx, Info)
         DropdownInteract.InputBegan:Connect(function(Input)
             if Input.UserInputType == Enum.UserInputType.MouseButton1 and not Library:MouseIsOverOpenedFrame() then
                 ListOuter.Visible = not ListOuter.Visible;
-                DropdownArrow.Text = ListOuter.Visible and '▲' or '▼';
+                DropdownArrow.Text = ListOuter.Visible and 'в–І' or 'в–ј';
                 
                 if ListOuter.Visible then
                     ListOuter.Position = UDim2.fromOffset(DropdownOuter.AbsolutePosition.X, DropdownOuter.AbsolutePosition.Y + DropdownOuter.AbsoluteSize.Y + 2);
@@ -2328,7 +2328,7 @@ function Funcs:AddDropdown(Idx, Info)
                         local DPos, DSize = DropdownOuter.AbsolutePosition, DropdownOuter.AbsoluteSize;
                         if Mouse.X < DPos.X or Mouse.X > DPos.X + DSize.X or Mouse.Y < DPos.Y or Mouse.Y > DPos.Y + DSize.Y then
                             ListOuter.Visible = false;
-                            DropdownArrow.Text = '▼';
+                            DropdownArrow.Text = 'в–ј';
                             Library.OpenedFrames[ListOuter] = nil;
                         end
                     end;
@@ -2701,7 +2701,7 @@ function Library:CreateWindow(...)
     if type(Config.Title) ~= 'string' then Config.Title = 'KAMIDERE' end
     if type(Config.MenuFadeTime) ~= 'number' then Config.MenuFadeTime = 0.2 end
     if typeof(Config.Position) ~= 'UDim2' then Config.Position = UDim2.fromOffset(175, 50) end
-    if typeof(Config.Size) ~= 'UDim2' then Config.Size = UDim2.fromOffset(740, 520) end -- ⬅️ УВЕЛИЧИЛИ ШИРИНУ ДО 740 (было 650)
+    if typeof(Config.Size) ~= 'UDim2' then Config.Size = UDim2.fromOffset(740, 520) end -- в¬…пёЏ РЈР’Р•Р›РР§РР›Р РЁРР РРќРЈ Р”Рћ 740 (Р±С‹Р»Рѕ 650)
 
     if Config.Center then
         Config.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -2731,7 +2731,7 @@ function Library:CreateWindow(...)
         Font = Enum.Font.Gotham,
         TextSize = 16,
         TextXAlignment = Enum.TextXAlignment.Right,
-        TextColor3 = Color3.fromRGB(35, 35, 35), -- ЦВЕТ ТЕПЕРЬ ТЕМНО-СЕРЫЙ (почти сливается с фоном)
+        TextColor3 = Color3.fromRGB(35, 35, 35), -- Р¦Р’Р•Рў РўР•РџР•Р Р¬ РўР•РњРќРћ-РЎР•Р Р«Р™ (РїРѕС‡С‚Рё СЃР»РёРІР°РµС‚СЃСЏ СЃ С„РѕРЅРѕРј)
         ZIndex = 3;
         Parent = Outer;
     });
@@ -2740,7 +2740,7 @@ if Library.RegistryMap[WindowLabel] then
         Library.RegistryMap[WindowLabel].Properties.TextColor3 = nil;
     end
 
-    -- ... дальше идет LeftPanel и остальной код
+    -- ... РґР°Р»СЊС€Рµ РёРґРµС‚ LeftPanel Рё РѕСЃС‚Р°Р»СЊРЅРѕР№ РєРѕРґ
 
     local LeftPanel = Library:Create('Frame', {
         BackgroundTransparency = 1,
@@ -2751,30 +2751,19 @@ if Library.RegistryMap[WindowLabel] then
         Parent = Outer;
     });
 
--- === ТОТ САМЫЙ "ВТОРОЙ БГ" ЗА ВСЕМИ ВКЛАДКАМИ ===
     local TabArea = Library:Create('Frame', {
-        BackgroundColor3 = Library.BackgroundColor, -- Фрейм цвета бг
-        BorderSizePixel = 0,
-        Position = UDim2.new(0, 10, 0, 30), -- Сдвинул чуть левее, чтобы смотрелось как панель
-        Size = UDim2.new(1, -20, 1, -40),
+        BackgroundTransparency = 1;
+        Position = UDim2.new(0, 15, 0, 30);
+        Size = UDim2.new(1, -30, 1, -40);
         ZIndex = 3;
         Parent = LeftPanel;
     });
-    Library:Create('UICorner', { CornerRadius = UDim.new(0, 6), Parent = TabArea });
-    Library:AddToRegistry(TabArea, { BackgroundColor3 = 'BackgroundColor' });
 
     local TabListLayout = Library:Create('UIListLayout', {
-        Padding = UDim.new(0, 2); -- Уменьшил отступ между кнопками
+        Padding = UDim.new(0, 5);
         FillDirection = Enum.FillDirection.Vertical;
         SortOrder = Enum.SortOrder.LayoutOrder;
-        HorizontalAlignment = Enum.HorizontalAlignment.Center; -- Центрируем вкладки
         Parent = TabArea;
-    });
-
-    -- Отступ сверху, чтобы первая вкладка не прилипала к потолку
-    Library:Create('UIPadding', {
-        PaddingTop = UDim.new(0, 6),
-        Parent = TabArea
     });
 
     local TabContainer = Library:Create('Frame', {
@@ -2793,17 +2782,13 @@ if Library.RegistryMap[WindowLabel] then
     function Window:AddTab(Name)
         local Tab = { Groupboxes = {}, Tabboxes = {} };
 
-        -- === САМА КНОПКА (САБТАБ), СДЕЛАЛИ МЕНЬШЕ ===
         local TabButton = Library:Create('Frame', {
-            BackgroundTransparency = 1, -- Изначально прозрачная
-            BackgroundColor3 = Library.MainColor, -- "Серый такой"
+            BackgroundTransparency = 1,
             BorderSizePixel = 0,
-            Size = UDim2.new(1, -12, 0, 24), -- Меньше размером (было 30 высоты, стало 24)
-            ZIndex = 4,
+            Size = UDim2.new(1, 0, 0, 30),
+            ZIndex = 1,
             Parent = TabArea;
         });
-        Library:Create('UICorner', { CornerRadius = UDim.new(0, 4), Parent = TabButton });
-        Library:AddToRegistry(TabButton, { BackgroundColor3 = 'MainColor' });
 
         local TabHighlight = Library:Create('Frame', {
             BackgroundColor3 = Library.AccentColor,
@@ -2811,7 +2796,7 @@ if Library.RegistryMap[WindowLabel] then
             Position = UDim2.new(0, 0, 0.5, -8),
             Size = UDim2.new(0, 2, 0, 16),
             Visible = false,
-            ZIndex = 5,
+            ZIndex = 2,
             Parent = TabButton;
         });
         Library:Create('UICorner', { CornerRadius = UDim.new(0, 2), Parent = TabHighlight });
@@ -2825,7 +2810,7 @@ if Library.RegistryMap[WindowLabel] then
             TextSize = 13,
             TextXAlignment = Enum.TextXAlignment.Left,
             TextColor3 = Color3.fromRGB(130, 130, 130),
-            ZIndex = 5,
+            ZIndex = 2,
             Parent = TabButton;
         });
 
@@ -2888,7 +2873,6 @@ if Library.RegistryMap[WindowLabel] then
         function Tab:ShowTab()
             for _, Tab in next, Window.Tabs do Tab:HideTab() end;
             TabHighlight.Visible = true;
-            TabButton.BackgroundTransparency = 0; -- ПОКАЗЫВАЕМ СЕРЫЙ ФОН ПРИ ВЫБОРЕ
             TabButtonLabel.TextColor3 = Library.FontColor;
             if not Library.RegistryMap[TabButtonLabel] then Library.RegistryMap[TabButtonLabel] = {Properties={}} end
             Library.RegistryMap[TabButtonLabel].Properties.TextColor3 = 'FontColor';
@@ -2897,7 +2881,6 @@ if Library.RegistryMap[WindowLabel] then
 
         function Tab:HideTab()
             TabHighlight.Visible = false;
-            TabButton.BackgroundTransparency = 1; -- УБИРАЕМ ФОН (сливается с БГ)
             TabButtonLabel.TextColor3 = Color3.fromRGB(130, 130, 130);
             if Library.RegistryMap[TabButtonLabel] then
                 Library.RegistryMap[TabButtonLabel].Properties.TextColor3 = nil;
@@ -2982,11 +2965,11 @@ function Tab:AddTabbox(Info)
             Library:Create('UICorner', { CornerRadius = UDim.new(0, 6), Parent = BoxOuter });
             Library:AddToRegistry(BoxOuter, { BackgroundColor3 = 'MainColor' });
 
-            -- Панель с кнопками таббоксов
+            -- РџР°РЅРµР»СЊ СЃ РєРЅРѕРїРєР°РјРё С‚Р°Р±Р±РѕРєСЃРѕРІ
             local TabboxButtons = Library:Create('Frame', {
                 BackgroundTransparency = 1,
                 Position = UDim2.new(0, 0, 0, 1),
-                Size = UDim2.new(1, 0, 0, 24), -- Сделал чуть выше, чтобы линия смотрелась красиво
+                Size = UDim2.new(1, 0, 0, 24), -- РЎРґРµР»Р°Р» С‡СѓС‚СЊ РІС‹С€Рµ, С‡С‚РѕР±С‹ Р»РёРЅРёСЏ СЃРјРѕС‚СЂРµР»Р°СЃСЊ РєСЂР°СЃРёРІРѕ
                 ZIndex = 5,
                 Parent = BoxOuter;
             });
@@ -3001,7 +2984,7 @@ function Tab:AddTabbox(Info)
             function Tabbox:AddTab(Name)
                 local Tab = {};
                 
-                -- Кнопка теперь ВСЕГДА прозрачная, фон не меняется
+                -- РљРЅРѕРїРєР° С‚РµРїРµСЂСЊ Р’РЎР•Р“Р”Рђ РїСЂРѕР·СЂР°С‡РЅР°СЏ, С„РѕРЅ РЅРµ РјРµРЅСЏРµС‚СЃСЏ
                 local Button = Library:Create('Frame', {
                     BackgroundTransparency = 1,
                     BorderSizePixel = 0,
@@ -3010,7 +2993,7 @@ function Tab:AddTabbox(Info)
                     Parent = TabboxButtons;
                 });
 
-                -- Текст кнопки
+                -- РўРµРєСЃС‚ РєРЅРѕРїРєРё
                 local ButtonLabel = Library:CreateLabel({
                     Size = UDim2.new(1, 0, 1, 0),
                     TextSize = 13,
@@ -3022,13 +3005,13 @@ function Tab:AddTabbox(Info)
                     Parent = Button;
                 });
 
-                -- Тонкая линия снизу (Underline), изначально скрыта
+                -- РўРѕРЅРєР°СЏ Р»РёРЅРёСЏ СЃРЅРёР·Сѓ (Underline), РёР·РЅР°С‡Р°Р»СЊРЅРѕ СЃРєСЂС‹С‚Р°
                 local Underline = Library:Create('Frame', {
                     BackgroundColor3 = Library.AccentColor,
                     BorderSizePixel = 0,
                     AnchorPoint = Vector2.new(0.5, 0),
-                    Position = UDim2.new(0.5, 0, 1, -2), -- Прижата к низу, по центру
-                    Size = UDim2.new(0.6, 0, 0, 2), -- Занимает 60% ширины (выглядит очень стильно)
+                    Position = UDim2.new(0.5, 0, 1, -2), -- РџСЂРёР¶Р°С‚Р° Рє РЅРёР·Сѓ, РїРѕ С†РµРЅС‚СЂСѓ
+                    Size = UDim2.new(0.6, 0, 0, 2), -- Р—Р°РЅРёРјР°РµС‚ 60% С€РёСЂРёРЅС‹ (РІС‹РіР»СЏРґРёС‚ РѕС‡РµРЅСЊ СЃС‚РёР»СЊРЅРѕ)
                     Visible = false,
                     ZIndex = 8,
                     Parent = Button;
@@ -3037,10 +3020,10 @@ function Tab:AddTabbox(Info)
                 Library:Create('UICorner', { CornerRadius = UDim.new(0, 4), Parent = Underline });
                 Library:AddToRegistry(Underline, { BackgroundColor3 = 'AccentColor' });
 
-                -- Контейнер для элементов внутри этого под-таба
+                -- РљРѕРЅС‚РµР№РЅРµСЂ РґР»СЏ СЌР»РµРјРµРЅС‚РѕРІ РІРЅСѓС‚СЂРё СЌС‚РѕРіРѕ РїРѕРґ-С‚Р°Р±Р°
                 local Container = Library:Create('Frame', {
                     BackgroundTransparency = 1,
-                    Position = UDim2.new(0, 4, 0, 28), -- Опустил контент чуть ниже
+                    Position = UDim2.new(0, 4, 0, 28), -- РћРїСѓСЃС‚РёР» РєРѕРЅС‚РµРЅС‚ С‡СѓС‚СЊ РЅРёР¶Рµ
                     Size = UDim2.new(1, -8, 1, -28),
                     ZIndex = 1,
                     Visible = false,
@@ -3050,7 +3033,7 @@ function Tab:AddTabbox(Info)
                 Library:Create('UIListLayout', {
                     FillDirection = Enum.FillDirection.Vertical,
                     SortOrder = Enum.SortOrder.LayoutOrder,
-                    Padding = UDim.new(0, 4), -- Добавил аккуратный отступ между элементами
+                    Padding = UDim.new(0, 4), -- Р”РѕР±Р°РІРёР» Р°РєРєСѓСЂР°С‚РЅС‹Р№ РѕС‚СЃС‚СѓРї РјРµР¶РґСѓ СЌР»РµРјРµРЅС‚Р°РјРё
                     Parent = Container;
                 });
 
@@ -3058,7 +3041,7 @@ function Tab:AddTabbox(Info)
                     for _, Tab in next, Tabbox.Tabs do Tab:Hide() end;
                     Container.Visible = true;
                     
-                    -- Красим текст в цвет акцента и показываем линию
+                    -- РљСЂР°СЃРёРј С‚РµРєСЃС‚ РІ С†РІРµС‚ Р°РєС†РµРЅС‚Р° Рё РїРѕРєР°Р·С‹РІР°РµРј Р»РёРЅРёСЋ
                     ButtonLabel.TextColor3 = Library.AccentColor;
                     if not Library.RegistryMap[ButtonLabel] then Library.RegistryMap[ButtonLabel] = {Properties={}} end
                     Library.RegistryMap[ButtonLabel].Properties.TextColor3 = 'AccentColor';
@@ -3070,7 +3053,7 @@ function Tab:AddTabbox(Info)
                 function Tab:Hide()
                     Container.Visible = false;
                     
-                    -- Возвращаем текст в обычный белый и прячем линию
+                    -- Р’РѕР·РІСЂР°С‰Р°РµРј С‚РµРєСЃС‚ РІ РѕР±С‹С‡РЅС‹Р№ Р±РµР»С‹Р№ Рё РїСЂСЏС‡РµРј Р»РёРЅРёСЋ
                     ButtonLabel.TextColor3 = Library.FontColor;
                     if not Library.RegistryMap[ButtonLabel] then Library.RegistryMap[ButtonLabel] = {Properties={}} end
                     Library.RegistryMap[ButtonLabel].Properties.TextColor3 = 'FontColor';
@@ -3092,7 +3075,7 @@ function Tab:AddTabbox(Info)
                     local Size = 0;
                     for _, Element in next, Tab.Container:GetChildren() do
                         if (not Element:IsA('UIListLayout')) and Element.Visible then
-                            Size = Size + Element.Size.Y.Offset + 4; -- Учитываем Padding = 4
+                            Size = Size + Element.Size.Y.Offset + 4; -- РЈС‡РёС‚С‹РІР°РµРј Padding = 4
                         end;
                     end;
                     
