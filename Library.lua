@@ -2775,7 +2775,7 @@ if Library.RegistryMap[WindowLabel] then
         BorderSizePixel = 0,
         Position = UDim2.new(0, 350, 0, 90), -- Сделали ПРАВЕЕ (165) и ВЫШЕ (15)
         -- Ширина: (1, -X - зазор_справа). Высота: (1, -Y - зазор_снизу)
-        Size = UDim2.new(1, -220, 1, -20), -- Сделали БОЛЬШЕ (зазоры справа и снизу всего 5px)
+        Size = UDim2.new(1, -250, 1, -260), -- Сделали БОЛЬШЕ (зазоры справа и снизу всего 5px)
         ClipsDescendants = true, -- Чтобы групбоксы не вылазили за края
         ZIndex = 1;
         Parent = Outer;
