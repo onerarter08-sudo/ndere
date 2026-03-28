@@ -1814,7 +1814,6 @@ do
         local Toggle = {
             Value = Info.Default or false;
             Type = 'Toggle';
-
             Callback = Info.Callback or function(Value) end;
             Addons = {},
             Risky = Info.Risky,
@@ -1823,40 +1822,52 @@ do
         local Groupbox = self;
         local Container = Groupbox.Container;
 
+        -- Внешний фрейм (теперь выполняет роль скругленной обводки)
         local ToggleOuter = Library:Create('Frame', {
-            BackgroundColor3 = Color3.new(0, 0, 0);
-            BorderColor3 = Color3.new(0, 0, 0);
-            Size = UDim2.new(0, 13, 0, 13);
+            BackgroundColor3 = Library.OutlineColor;
+            BorderSizePixel = 0; -- Никаких черных контуров!
+            Size = UDim2.new(0, 14, 0, 14);
             ZIndex = 5;
             Parent = Container;
         });
 
-        Library:AddToRegistry(ToggleOuter, {
-            BorderColor3 = 'Black';
+        Library:Create('UICorner', {
+            CornerRadius = UDim.new(0, 4),
+            Parent = ToggleOuter
         });
 
+        Library:AddToRegistry(ToggleOuter, {
+            BackgroundColor3 = 'OutlineColor';
+        });
+
+        -- Внутренний фрейм (фон чекбокса)
         local ToggleInner = Library:Create('Frame', {
             BackgroundColor3 = Library.MainColor;
-            BorderColor3 = Library.OutlineColor;
-            BorderMode = Enum.BorderMode.Inset;
-            Size = UDim2.new(1, 0, 1, 0);
+            BorderSizePixel = 0;
+            AnchorPoint = Vector2.new(0.5, 0.5);
+            Position = UDim2.new(0.5, 0, 0.5, 0);
+            Size = UDim2.new(1, -2, 1, -2); -- На 1px меньше с каждой стороны, чтобы "обводка" была тонкой
             ZIndex = 6;
             Parent = ToggleOuter;
         });
 
+        Library:Create('UICorner', {
+            CornerRadius = UDim.new(0, 3),
+            Parent = ToggleInner
+        });
+
         Library:AddToRegistry(ToggleInner, {
             BackgroundColor3 = 'MainColor';
-            BorderColor3 = 'OutlineColor';
         });
 
         local ToggleLabel = Library:CreateLabel({
             Size = UDim2.new(0, 216, 1, 0);
-            Position = UDim2.new(1, 6, 0, 0);
-            TextSize = 14;
+            Position = UDim2.new(1, 8, 0, 0); -- Отступ от квадратика
+            TextSize = 13, -- В Камидере текст мелкий и аккуратный
             Text = Info.Text;
             TextXAlignment = Enum.TextXAlignment.Left;
             ZIndex = 6;
-            Parent = ToggleInner;
+            Parent = ToggleOuter;
         });
 
         Library:Create('UIListLayout', {
@@ -1874,11 +1885,6 @@ do
             Parent = ToggleOuter;
         });
 
-        Library:OnHighlight(ToggleRegion, ToggleOuter,
-            { BorderColor3 = 'AccentColor' },
-            { BorderColor3 = 'Black' }
-        );
-
         function Toggle:UpdateColors()
             Toggle:Display();
         end;
@@ -1888,11 +1894,12 @@ do
         end
 
         function Toggle:Display()
+            -- Дизайн Камидере: при включении квадратик полностью заливается цветом
             ToggleInner.BackgroundColor3 = Toggle.Value and Library.AccentColor or Library.MainColor;
-            ToggleInner.BorderColor3 = Toggle.Value and Library.AccentColorDark or Library.OutlineColor;
+            ToggleOuter.BackgroundColor3 = Toggle.Value and Library.AccentColor or Library.OutlineColor;
 
             Library.RegistryMap[ToggleInner].Properties.BackgroundColor3 = Toggle.Value and 'AccentColor' or 'MainColor';
-            Library.RegistryMap[ToggleInner].Properties.BorderColor3 = Toggle.Value and 'AccentColorDark' or 'OutlineColor';
+            Library.RegistryMap[ToggleOuter].Properties.BackgroundColor3 = Toggle.Value and 'AccentColor' or 'OutlineColor';
         end;
 
         function Toggle:OnChanged(Func)
@@ -1920,7 +1927,7 @@ do
 
         ToggleRegion.InputBegan:Connect(function(Input)
             if Input.UserInputType == Enum.UserInputType.MouseButton1 and not Library:MouseIsOverOpenedFrame() then
-                Toggle:SetValue(not Toggle.Value) -- Why was it not like this from the start?
+                Toggle:SetValue(not Toggle.Value)
                 Library:AttemptSave();
             end;
         end);
