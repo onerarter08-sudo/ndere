@@ -2770,12 +2770,11 @@ local TabContainer = Library:Create('Frame', {
         AnchorPoint = Vector2.new(0, 0),
         BackgroundColor3 = Library.BackgroundColor,
         BorderSizePixel = 0,
-        -- Сдвинули левее: теперь отступ от края панели табов всего 1 пиксель (150 + 1)
-        Position = UDim2.new(0, 120, 0, 40), --тест
-        -- Растянули: (151 + 5 пикселей зазора справа = 156)
-        Size = UDim2.new(1, -150, 1, -80), 
+        Position = UDim2.new(0, 151, 0, 40), -- Отступ слева (151) и сверху (40)
+        -- Вычитаем ровно 151 и 40. Теперь фрейм коснется правого и нижнего края:
+        Size = UDim2.new(1, -151, 1, -40), 
         ClipsDescendants = true,
-        ZIndex = 1;
+        ZIndex = 1,
         Parent = Outer;
     });
 
