@@ -1923,7 +1923,7 @@ function Funcs:AddToggle(Idx, Info)
         return Toggle;
     end;
 
-    function Funcs:AddSlider(Idx, Info)
+function Funcs:AddSlider(Idx, Info)
         assert(Info.Default, 'AddSlider: Missing default value.');
         assert(Info.Text, 'AddSlider: Missing slider text.');
         assert(Info.Min, 'AddSlider: Missing minimum value.');
@@ -1935,117 +1935,119 @@ function Funcs:AddToggle(Idx, Info)
             Min = Info.Min;
             Max = Info.Max;
             Rounding = Info.Rounding;
-            MaxSize = 232;
-            Type = 'Slider';
             Callback = Info.Callback or function(Value) end;
+            Type = 'Slider';
         };
 
         local Groupbox = self;
         local Container = Groupbox.Container;
 
-        if not Info.Compact then
-            Library:CreateLabel({
-                Size = UDim2.new(1, 0, 0, 10);
-                TextSize = 14;
-                Text = Info.Text;
-                TextXAlignment = Enum.TextXAlignment.Left;
-                TextYAlignment = Enum.TextYAlignment.Bottom;
-                ZIndex = 5;
-                Parent = Container;
-            });
-
-            Groupbox:AddBlank(3);
-        end
-
-        local SliderOuter = Library:Create('Frame', {
-            BackgroundColor3 = Color3.new(0, 0, 0);
-            BorderColor3 = Color3.new(0, 0, 0);
-            Size = UDim2.new(1, -4, 0, 13);
+        -- 1. Главный контейнер (вмещает и текст, и саму линию)
+        local SliderContainer = Library:Create('Frame', {
+            BackgroundTransparency = 1;
+            Size = UDim2.new(1, -4, 0, 32); -- Высота под текст и ползунок
             ZIndex = 5;
             Parent = Container;
         });
 
-        Library:AddToRegistry(SliderOuter, {
-            BorderColor3 = 'Black';
+        -- 2. Текст названия (слева сверху)
+        local SliderLabel = Library:CreateLabel({
+            Size = UDim2.new(0.5, 0, 0, 14);
+            Position = UDim2.new(0, 0, 0, 0);
+            TextSize = 13;
+            Text = Info.Text;
+            TextXAlignment = Enum.TextXAlignment.Left;
+            ZIndex = 6;
+            Parent = SliderContainer;
         });
 
+        -- 3. Цифры значения (справа сверху)
+        local SliderValueLabel = Library:CreateLabel({
+            Size = UDim2.new(0.5, 0, 0, 14);
+            Position = UDim2.new(0.5, 0, 0, 0);
+            TextSize = 13;
+            Text = tostring(Info.Default) .. (Info.Suffix or '');
+            TextXAlignment = Enum.TextXAlignment.Right;
+            ZIndex = 6;
+            Parent = SliderContainer;
+        });
+
+        -- 4. Внешняя линия (фон слайдера, тонкий)
+        local SliderOuter = Library:Create('Frame', {
+            BackgroundColor3 = Library.OutlineColor;
+            BorderSizePixel = 0;
+            Position = UDim2.new(0, 0, 0, 22); -- Опускаем под текст
+            Size = UDim2.new(1, 0, 0, 4); -- ТОЛЩИНА ЛИНИИ (4 пикселя)
+            ZIndex = 5;
+            Parent = SliderContainer;
+        });
+
+        Library:Create('UICorner', { CornerRadius = UDim.new(0, 4), Parent = SliderOuter });
+        Library:AddToRegistry(SliderOuter, { BackgroundColor3 = 'OutlineColor'; });
+
+        -- 5. Заполненная часть (цвет акцента)
         local SliderInner = Library:Create('Frame', {
-            BackgroundColor3 = Library.MainColor;
-            BorderColor3 = Library.OutlineColor;
-            BorderMode = Enum.BorderMode.Inset;
-            Size = UDim2.new(1, 0, 1, 0);
+            BackgroundColor3 = Library.AccentColor;
+            BorderSizePixel = 0;
+            Size = UDim2.new(0, 0, 1, 0);
             ZIndex = 6;
             Parent = SliderOuter;
         });
 
-        Library:AddToRegistry(SliderInner, {
-            BackgroundColor3 = 'MainColor';
-            BorderColor3 = 'OutlineColor';
-        });
+        Library:Create('UICorner', { CornerRadius = UDim.new(0, 4), Parent = SliderInner });
+        Library:AddToRegistry(SliderInner, { BackgroundColor3 = 'AccentColor'; });
 
-        local Fill = Library:Create('Frame', {
-            BackgroundColor3 = Library.AccentColor;
-            BorderColor3 = Library.AccentColorDark;
-            Size = UDim2.new(0, 0, 1, 0);
+        -- 6. КРУЖОЧЕК НА КОНЦЕ (Knob)
+        local SliderKnob = Library:Create('Frame', {
+            BackgroundColor3 = Color3.fromRGB(255, 255, 255); -- Белый кружок (выглядит очень сочно)
+            BorderSizePixel = 0;
+            AnchorPoint = Vector2.new(0.5, 0.5); -- Якорь ровно по центру
+            Position = UDim2.new(1, 0, 0.5, 0); -- Привязан к концу закрашенной линии
+            Size = UDim2.new(0, 10, 0, 10); -- РАЗМЕР КРУЖКА (10x10)
             ZIndex = 7;
             Parent = SliderInner;
         });
 
-        Library:AddToRegistry(Fill, {
-            BackgroundColor3 = 'AccentColor';
-            BorderColor3 = 'AccentColorDark';
-        });
+        -- Скругление на максимум, чтобы получился идеальный круг
+        Library:Create('UICorner', { CornerRadius = UDim.new(1, 0), Parent = SliderKnob });
 
-        local HideBorderRight = Library:Create('Frame', {
-            BackgroundColor3 = Library.AccentColor;
-            BorderSizePixel = 0;
-            Position = UDim2.new(1, 0, 0, 0);
-            Size = UDim2.new(0, 1, 1, 0);
+        -- Невидимая кнопка для захвата мыши
+        local SliderInteract = Library:Create('TextButton', {
+            BackgroundTransparency = 1;
+            Position = UDim2.new(0, 0, 0, 15);
+            Size = UDim2.new(1, 0, 0, 15);
+            Text = '';
             ZIndex = 8;
-            Parent = Fill;
+            Parent = SliderContainer;
         });
 
-        Library:AddToRegistry(HideBorderRight, {
-            BackgroundColor3 = 'AccentColor';
-        });
+        -- Логика перетаскивания
+        local Dragging = false;
 
-        local DisplayLabel = Library:CreateLabel({
-            Size = UDim2.new(1, 0, 1, 0);
-            TextSize = 14;
-            Text = 'Infinite';
-            ZIndex = 9;
-            Parent = SliderInner;
-        });
-
-        Library:OnHighlight(SliderOuter, SliderOuter,
-            { BorderColor3 = 'AccentColor' },
-            { BorderColor3 = 'Black' }
-        );
-
-        if type(Info.Tooltip) == 'string' then
-            Library:AddToolTip(Info.Tooltip, SliderOuter)
-        end
-
-        function Slider:UpdateColors()
-            Fill.BackgroundColor3 = Library.AccentColor;
-            Fill.BorderColor3 = Library.AccentColorDark;
+        function Slider:SetRaw(Percent)
+            Percent = math.clamp(Percent, 0, 1);
+            local Value = Info.Min + ((Info.Max - Info.Min) * Percent);
+            local Mult = 10 ^ Info.Rounding;
+            Value = math.round(Value * Mult) / Mult;
+            Slider:SetValue(Value);
         end;
 
-        function Slider:Display()
-            local Suffix = Info.Suffix or '';
+        function Slider:SetValue(Value)
+            local Num = tonumber(Value);
+            if not Num then return; end;
+            Num = math.clamp(Num, Info.Min, Info.Max);
 
-            if Info.Compact then
-                DisplayLabel.Text = Info.Text .. ': ' .. Slider.Value .. Suffix
-            elseif Info.HideMax then
-                DisplayLabel.Text = string.format('%s', Slider.Value .. Suffix)
-            else
-                DisplayLabel.Text = string.format('%s/%s', Slider.Value .. Suffix, Slider.Max .. Suffix);
-            end
+            Slider.Value = Num;
+            SliderValueLabel.Text = tostring(Num) .. (Info.Suffix or '');
 
-            local X = math.ceil(Library:MapValue(Slider.Value, Slider.Min, Slider.Max, 0, Slider.MaxSize));
-            Fill.Size = UDim2.new(0, X, 1, 0);
+            local Percent = (Num - Info.Min) / (Info.Max - Info.Min);
+            -- Анимация заполнения
+            TweenService:Create(SliderInner, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+                Size = UDim2.new(Percent, 0, 1, 0)
+            }):Play();
 
-            HideBorderRight.Visible = not (X == Slider.MaxSize or X == 0);
+            Library:SafeCallback(Slider.Callback, Slider.Value);
+            Library:SafeCallback(Slider.Changed, Slider.Value);
         end;
 
         function Slider:OnChanged(Func)
@@ -2053,65 +2055,31 @@ function Funcs:AddToggle(Idx, Info)
             Func(Slider.Value);
         end;
 
-        local function Round(Value)
-            if Slider.Rounding == 0 then
-                return math.floor(Value);
-            end;
-
-
-            return tonumber(string.format('%.' .. Slider.Rounding .. 'f', Value))
-        end;
-
-        function Slider:GetValueFromXOffset(X)
-            return Round(Library:MapValue(X, 0, Slider.MaxSize, Slider.Min, Slider.Max));
-        end;
-
-        function Slider:SetValue(Str)
-            local Num = tonumber(Str);
-
-            if (not Num) then
-                return;
-            end;
-
-            Num = math.clamp(Num, Slider.Min, Slider.Max);
-
-            Slider.Value = Num;
-            Slider:Display();
-
-            Library:SafeCallback(Slider.Callback, Slider.Value);
-            Library:SafeCallback(Slider.Changed, Slider.Value);
-        end;
-
-        SliderInner.InputBegan:Connect(function(Input)
+        SliderInteract.InputBegan:Connect(function(Input)
             if Input.UserInputType == Enum.UserInputType.MouseButton1 and not Library:MouseIsOverOpenedFrame() then
-                local mPos = Mouse.X;
-                local gPos = Fill.Size.X.Offset;
-                local Diff = mPos - (Fill.AbsolutePosition.X + gPos);
-
-                while InputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) do
-                    local nMPos = Mouse.X;
-                    local nX = math.clamp(gPos + (nMPos - mPos) + Diff, 0, Slider.MaxSize);
-
-                    local nValue = Slider:GetValueFromXOffset(nX);
-                    local OldValue = Slider.Value;
-                    Slider.Value = nValue;
-
-                    Slider:Display();
-
-                    if nValue ~= OldValue then
-                        Library:SafeCallback(Slider.Callback, Slider.Value);
-                        Library:SafeCallback(Slider.Changed, Slider.Value);
-                    end;
-
-                    RenderStepped:Wait();
-                end;
-
-                Library:AttemptSave();
+                Dragging = true;
+                Slider:SetRaw((Input.Position.X - SliderOuter.AbsolutePosition.X) / SliderOuter.AbsoluteSize.X);
             end;
         end);
 
-        Slider:Display();
-        Groupbox:AddBlank(Info.BlankSize or 6);
+        Library:GiveSignal(InputService.InputEnded:Connect(function(Input)
+            if Input.UserInputType == Enum.UserInputType.MouseButton1 then
+                if Dragging then
+                    Dragging = false;
+                    Library:AttemptSave();
+                end;
+            end;
+        end));
+
+        Library:GiveSignal(InputService.InputChanged:Connect(function(Input)
+            if Dragging and Input.UserInputType == Enum.UserInputType.MouseMovement then
+                Slider:SetRaw((Input.Position.X - SliderOuter.AbsolutePosition.X) / SliderOuter.AbsoluteSize.X);
+            end;
+        end));
+
+        Slider:SetValue(Slider.Value);
+        
+        Groupbox:AddBlank(Info.BlankSize or 9);
         Groupbox:Resize();
 
         Options[Idx] = Slider;
