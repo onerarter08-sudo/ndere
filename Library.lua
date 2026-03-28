@@ -2789,11 +2789,11 @@ local TabContainer = Library:Create('Frame', {
     function Window:AddTab(Name, IconID)
         local Tab = { Groupboxes = {}, Tabboxes = {} };
 
-        local TabButton = Library:Create('Frame', {
+            local TabButton = Library:Create('Frame', {
             BackgroundTransparency = 1,
             BackgroundColor3 = Library.MainColor,
             BorderSizePixel = 0,
-            Size = UDim2.new(1, -12, 0, 24),
+            Size = UDim2.new(1, 0, 0, 24), -- ВОТ ТУТ: 1, 0 (на всю ширину)
             ZIndex = 4,
             Parent = TabArea;
         });
