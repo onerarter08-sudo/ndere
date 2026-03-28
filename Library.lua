@@ -2805,7 +2805,7 @@ local TabContainer = Library:Create('Frame', {
             BackgroundColor3 = Library.AccentColor,
             BorderSizePixel = 0,
             -- Увеличиваем 10 до 18 (или больше), пока не прилипнет намертво:
-            Position = UDim2.new(1, 18, 0.5, -8), 
+            Position = UDim2.new(1, 38, 0.5, -8), 
             Size = UDim2.new(0, 2, 0, 16),
             Visible = false,
             ZIndex = 5,
