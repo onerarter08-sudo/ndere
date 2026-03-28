@@ -2806,7 +2806,7 @@ local TabHighlight = Library:Create('Frame', {
             BorderSizePixel = 0,
             -- Теперь кнопка доходит до самого края, поэтому ставим:
             -- 1 (правый край) и смещаем на -2 (чтобы ширина самой полоски влезла)
-            Position = UDim2.new(1, -2, 0.5, -8), 
+            Position = UDim2.new(1, -4, 0.5, -8), 
             Size = UDim2.new(0, 2, 0, 16),
             Visible = false,
             ZIndex = 5,
