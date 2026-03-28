@@ -2005,7 +2005,7 @@ function Funcs:AddSlider(Idx, Info)
 
         -- 6. Белый кружок (Ползунок)
         local SliderKnob = Library:Create('Frame', {
-            BackgroundColor3 = Color3.fromRGB(255, 255, 255);
+            BackgroundColor3 = Library.AccentColor;
             BorderSizePixel = 0;
             AnchorPoint = Vector2.new(0.5, 0.5); -- Центрируем
             Position = UDim2.new(1, 0, 0.5, 0); -- Крепим к правому краю SliderInner
