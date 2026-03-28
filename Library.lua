@@ -2771,7 +2771,7 @@ if Library.RegistryMap[WindowLabel] then
         BackgroundColor3 = Library.BackgroundColor,
         BorderSizePixel = 0,
         Position = UDim2.new(0, 145, 0, 40), -- ОПУСТИЛИ НИЖЕ (теперь сверху есть 40 пикселей под топ-бар и вотермарку)
-        Size = UDim2.new(1, -110, 1, -20), -- Уменьшили высоту, чтобы снизу остался аккуратный отступ 12px
+        Size = UDim2.new(1, -110, 1, 40), -- Уменьшили высоту, чтобы снизу остался аккуратный отступ 12px
         ZIndex = 2;
         Parent = Outer;
     });
