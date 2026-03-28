@@ -2770,13 +2770,18 @@ local TabContainer = Library:Create('Frame', {
         AnchorPoint = Vector2.new(0, 0),
         BackgroundColor3 = Library.BackgroundColor,
         BorderSizePixel = 0,
-        -- Теперь он идеально прижат к правому нижнему углу:
-        Position = UDim2.new(0, 250, 0, 260), 
-        Size = UDim2.new(1, -250, 1, -260), 
+        -- Начинаем сразу после табов (150 + 10 зазор) и под топ-баром (40)
+        Position = UDim2.new(0, 160, 0, 45), 
+        -- Ширина: во все окно минус табы и отступы (150 + 10 + 10 зазор справа)
+        -- Высота: во все окно минус топ-бар и отступы (45 + 10 зазор снизу)
+        Size = UDim2.new(1, -170, 1, -55), 
         ClipsDescendants = true,
         ZIndex = 1;
         Parent = Outer;
     });
+
+    Library:Create('UICorner', { CornerRadius = UDim.new(0, 6), Parent = TabContainer });
+    Library:AddToRegistry(TabContainer, { BackgroundColor3 = 'BackgroundColor' });
 
     Library:Create('UICorner', { CornerRadius = UDim.new(0, 6), Parent = TabContainer });
     Library:AddToRegistry(TabContainer, { BackgroundColor3 = 'BackgroundColor' });
