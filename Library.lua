@@ -2793,7 +2793,7 @@ local TabContainer = Library:Create('Frame', {
             BackgroundTransparency = 1,
             BackgroundColor3 = Library.MainColor,
             BorderSizePixel = 0,
-            Size = UDim2.new(1, 0, 0, 24), -- ВОТ ТУТ: 1, 0 (на всю ширину)
+            Size = UDim2.new(1, 0, 0, 18), -- ВОТ ТУТ: 1, 0 (на всю ширину)
             ZIndex = 4,
             Parent = TabArea;
         });
