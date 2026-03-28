@@ -2804,9 +2804,9 @@ local TabButton = Library:Create('Frame', {
 local TabHighlight = Library:Create('Frame', {
             BackgroundColor3 = Library.AccentColor,
             BorderSizePixel = 0,
-            -- Теперь кнопка доходит до самого края, поэтому ставим:
-            -- 1 (правый край) и смещаем на -2 (чтобы ширина самой полоски влезла)
-            Position = UDim2.new(1, -4, 0.5, -8), 
+            -- ПЕРЕШЛИ НА АБСОЛЮТНЫЕ ПИКСЕЛИ ОТ ЛЕВОГО КРАЯ:
+            -- 0 (считаем слева), 149 (пикселей вправо), 0.5 (центр по высоте), -8 (смещение центра)
+            Position = UDim2.new(0, 149, 0.5, -8), 
             Size = UDim2.new(0, 2, 0, 16),
             Visible = false,
             ZIndex = 5,
