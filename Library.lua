@@ -2766,17 +2766,14 @@ if Library.RegistryMap[WindowLabel] then
         Parent = TabArea;
     });
 
--- Простая настройка: (0, X, 0, Y)
-    -- X = отступ слева (чем больше число, тем ПРАВЕЕ фрейм)
-    -- Y = отступ сверху (чем меньше число, тем ВЫШЕ фрейм)
-        local TabContainer = Library:Create('Frame', {
-        AnchorPoint = Vector2.new(0, 0), -- Привязка за левый верхний угол
+local TabContainer = Library:Create('Frame', {
+        AnchorPoint = Vector2.new(0, 0),
         BackgroundColor3 = Library.BackgroundColor,
         BorderSizePixel = 0,
-        Position = UDim2.new(0, 350, 0, 90), -- Сделали ПРАВЕЕ (165) и ВЫШЕ (15)
-        -- Ширина: (1, -X - зазор_справа). Высота: (1, -Y - зазор_снизу)
-        Size = UDim2.new(1, -250, 1, -260), -- Сделали БОЛЬШЕ (зазоры справа и снизу всего 5px)
-        ClipsDescendants = true, -- Чтобы групбоксы не вылазили за края
+        -- Теперь он идеально прижат к правому нижнему углу:
+        Position = UDim2.new(0, 250, 0, 260), 
+        Size = UDim2.new(1, -250, 1, -260), 
+        ClipsDescendants = true,
         ZIndex = 1;
         Parent = Outer;
     });
