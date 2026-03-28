@@ -2766,21 +2766,23 @@ if Library.RegistryMap[WindowLabel] then
         Parent = TabArea;
     });
 
--- Расчет: 
-    -- Размер: 0.75 (75%) от ширины и высоты. 
-    -- Оффсеты тоже уменьшаем на четверть: 145 * 0.75 = 109, 40 * 0.75 = 30.
+-- Простая настройка: (0, X, 0, Y)
+    -- X = отступ слева (чем больше число, тем ПРАВЕЕ фрейм)
+    -- Y = отступ сверху (чем меньше число, тем ВЫШЕ фрейм)
         local TabContainer = Library:Create('Frame', {
-        AnchorPoint = Vector2.new(1, 1),
+        AnchorPoint = Vector2.new(0, 0), -- Привязка за левый верхний угол
         BackgroundColor3 = Library.BackgroundColor,
         BorderSizePixel = 0,
-        Position = UDim2.new(1, -5, 1, -5), -- Добавил микро-отступ 5px от правого нижнего края, чтобы не липло вплотную
-        -- Увеличиваем масштаб: 0.85 — это 85% ширины/высоты. 
-        -- Оффсеты считаем так: 0.85 * 145 (лево) ≈ 123, 0.85 * 40 (верх) ≈ 34.
-        Size = UDim2.new(0.85, -123, 0.85, -34), 
-        ClipsDescendants = true,
+        Position = UDim2.new(0, 165, 0, 15), -- Сделали ПРАВЕЕ (165) и ВЫШЕ (15)
+        -- Ширина: (1, -X - зазор_справа). Высота: (1, -Y - зазор_снизу)
+        Size = UDim2.new(1, -170, 1, -20), -- Сделали БОЛЬШЕ (зазоры справа и снизу всего 5px)
+        ClipsDescendants = true, -- Чтобы групбоксы не вылазили за края
         ZIndex = 1;
         Parent = Outer;
     });
+
+    Library:Create('UICorner', { CornerRadius = UDim.new(0, 6), Parent = TabContainer });
+    Library:AddToRegistry(TabContainer, { BackgroundColor3 = 'BackgroundColor' });
 
     Library:Create('UICorner', { CornerRadius = UDim.new(0, 6), Parent = TabContainer });
     Library:AddToRegistry(TabContainer, { BackgroundColor3 = 'BackgroundColor' });
