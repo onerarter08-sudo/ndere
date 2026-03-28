@@ -2859,8 +2859,11 @@ local TabContainer = Library:Create('Frame', {
 local LeftSide = Library:Create('ScrollingFrame', {
             BackgroundTransparency = 1;
             BorderSizePixel = 0;
-            Position = UDim2.new(0, 5, 0, 5); -- Минимальный отступ от краев серого фрейма
-            Size = UDim2.new(0.5, -10, 1, -10); 
+            -- 4 пикселя от левого края и 4 от верха
+            Position = UDim2.new(0, 4, 0, 4); 
+            -- Ширина: половина экрана минус 6px (4 слева + 2 до центра)
+            -- Высота: весь экран минус 8px (4 сверху + 4 снизу)
+            Size = UDim2.new(0.5, -6, 1, -8); 
             CanvasSize = UDim2.new(0, 0, 0, 0);
             BottomImage = ''; TopImage = '';
             ScrollBarThickness = 0;
@@ -2871,8 +2874,10 @@ local LeftSide = Library:Create('ScrollingFrame', {
         local RightSide = Library:Create('ScrollingFrame', {
             BackgroundTransparency = 1;
             BorderSizePixel = 0;
-            Position = UDim2.new(0.5, 5, 0, 5); 
-            Size = UDim2.new(0.5, -10, 1, -10); 
+            -- Начинаем с середины + 2 пикселя зазора, и 4 от верха
+            Position = UDim2.new(0.5, 2, 0, 4); 
+            -- Те же размеры, чтобы колонки были одинаковыми
+            Size = UDim2.new(0.5, -6, 1, -8); 
             CanvasSize = UDim2.new(0, 0, 0, 0);
             BottomImage = ''; TopImage = '';
             ScrollBarThickness = 0;
