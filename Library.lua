@@ -2789,11 +2789,11 @@ local TabContainer = Library:Create('Frame', {
     function Window:AddTab(Name, IconID)
         local Tab = { Groupboxes = {}, Tabboxes = {} };
 
-            local TabButton = Library:Create('Frame', {
+local TabButton = Library:Create('Frame', {
             BackgroundTransparency = 1,
             BackgroundColor3 = Library.MainColor,
             BorderSizePixel = 0,
-            Size = UDim2.new(1, 0, 0, 10), -- ВОТ ТУТ: 1, 0 (на всю ширину)
+            Size = UDim2.new(1, 0, 0, 24), -- ВОТ ТУТ: 1, 0 (на всю ширину)
             ZIndex = 4,
             Parent = TabArea;
         });
@@ -2801,11 +2801,12 @@ local TabContainer = Library:Create('Frame', {
         Library:AddToRegistry(TabButton, { BackgroundColor3 = 'MainColor' });
 
         -- Твоя розовая полоска справа
-            local TabHighlight = Library:Create('Frame', {
+local TabHighlight = Library:Create('Frame', {
             BackgroundColor3 = Library.AccentColor,
             BorderSizePixel = 0,
-            -- Увеличиваем 10 до 18 (или больше), пока не прилипнет намертво:
-            Position = UDim2.new(1, 38, 0.5, -8), 
+            -- Теперь кнопка доходит до самого края, поэтому ставим:
+            -- 1 (правый край) и смещаем на -2 (чтобы ширина самой полоски влезла)
+            Position = UDim2.new(1, -2, 0.5, -8), 
             Size = UDim2.new(0, 2, 0, 16),
             Visible = false,
             ZIndex = 5,
