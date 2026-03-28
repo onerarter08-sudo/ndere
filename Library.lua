@@ -2838,8 +2838,10 @@ if Library.RegistryMap[WindowLabel] then
 local LeftSide = Library:Create('ScrollingFrame', {
             BackgroundTransparency = 1;
             BorderSizePixel = 0;
-            Position = UDim2.new(0, 8, 0, 8); -- Добавили небольшой отступ от краев
-            Size = UDim2.new(0.5, -12, 1, -16); 
+            -- Прижимаем почти вплотную к левому верхнему углу серого фрейма
+            Position = UDim2.new(0, 6, 0, 6); 
+            -- Ширина 50% минус небольшой зазор, высота почти 100%
+            Size = UDim2.new(0.5, -8, 1, -12); 
             CanvasSize = UDim2.new(0, 0, 0, 0);
             BottomImage = ''; TopImage = '';
             ScrollBarThickness = 0;
@@ -2850,8 +2852,10 @@ local LeftSide = Library:Create('ScrollingFrame', {
         local RightSide = Library:Create('ScrollingFrame', {
             BackgroundTransparency = 1;
             BorderSizePixel = 0;
-            Position = UDim2.new(0.5, 7, 0, 10); -- БЫЛО 35, СТАЛО 10 (подтянули наверх!)
-            Size = UDim2.new(0.5, -12, 1, -20); -- Увеличили размер
+            -- Начинается ровно с середины (0.5)
+            Position = UDim2.new(0.5, 2, 0, 6); 
+            -- Такая же ширина и высота
+            Size = UDim2.new(0.5, -8, 1, -12); 
             CanvasSize = UDim2.new(0, 0, 0, 0);
             BottomImage = ''; TopImage = '';
             ScrollBarThickness = 0;
