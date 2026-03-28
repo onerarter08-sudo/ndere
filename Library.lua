@@ -2770,15 +2770,17 @@ local TabContainer = Library:Create('Frame', {
         AnchorPoint = Vector2.new(0, 0),
         BackgroundColor3 = Library.BackgroundColor,
         BorderSizePixel = 0,
-        -- Придвинули ближе: теперь отступ от табов всего 3px, а от верха 40px
-        Position = UDim2.new(0, 153, 0, 40), 
-        -- Растянули: теперь зазор справа и снизу тоже всего по 5 пикселей
-        -- (153 + 5 зазор справа = 158; 40 + 5 зазор снизу = 45)
-        Size = UDim2.new(1, -158, 1, -45), 
+        -- Сдвинули левее: теперь отступ от края панели табов всего 1 пиксель (150 + 1)
+        Position = UDim2.new(0, 151, 0, 40), 
+        -- Растянули: (151 + 5 пикселей зазора справа = 156)
+        Size = UDim2.new(1, -156, 1, -45), 
         ClipsDescendants = true,
         ZIndex = 1;
         Parent = Outer;
     });
+
+    Library:Create('UICorner', { CornerRadius = UDim.new(0, 6), Parent = TabContainer });
+    Library:AddToRegistry(TabContainer, { BackgroundColor3 = 'BackgroundColor' });
 
     Library:Create('UICorner', { CornerRadius = UDim.new(0, 6), Parent = TabContainer });
     Library:AddToRegistry(TabContainer, { BackgroundColor3 = 'BackgroundColor' });
