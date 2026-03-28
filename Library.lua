@@ -2773,7 +2773,7 @@ if Library.RegistryMap[WindowLabel] then
         AnchorPoint = Vector2.new(0, 0), -- Привязка за левый верхний угол
         BackgroundColor3 = Library.BackgroundColor,
         BorderSizePixel = 0,
-        Position = UDim2.new(0, 165, 0, 15), -- Сделали ПРАВЕЕ (165) и ВЫШЕ (15)
+        Position = UDim2.new(0, 190, 0, 35), -- Сделали ПРАВЕЕ (165) и ВЫШЕ (15)
         -- Ширина: (1, -X - зазор_справа). Высота: (1, -Y - зазор_снизу)
         Size = UDim2.new(1, -170, 1, -20), -- Сделали БОЛЬШЕ (зазоры справа и снизу всего 5px)
         ClipsDescendants = true, -- Чтобы групбоксы не вылазили за края
