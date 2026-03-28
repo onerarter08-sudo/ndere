@@ -2766,14 +2766,19 @@ if Library.RegistryMap[WindowLabel] then
         Parent = TabArea;
     });
 
+-- Тот самый фрейм ЗА всеми групбоксами
     local TabContainer = Library:Create('Frame', {
-        BackgroundTransparency = 1;
+        BackgroundColor3 = Library.BackgroundColor, -- Цвет БГ
         BorderSizePixel = 0,
-        Position = UDim2.new(0, 150, 0, 0),
-        Size = UDim2.new(1, -150, 1, 0),
+        Position = UDim2.new(0, 145, 0, 12), -- Аккуратные отступы сверху и слева
+        Size = UDim2.new(1, -157, 1, -24), -- Отступы справа и снизу
         ZIndex = 2;
         Parent = Outer;
     });
+
+    -- Даем ему скругления
+    Library:Create('UICorner', { CornerRadius = UDim.new(0, 6), Parent = TabContainer });
+    Library:AddToRegistry(TabContainer, { BackgroundColor3 = 'BackgroundColor' });
 
     function Window:SetWindowTitle(Title)
         WindowLabel.Text = Title;
