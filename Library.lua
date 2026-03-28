@@ -2771,7 +2771,7 @@ local TabContainer = Library:Create('Frame', {
         BackgroundColor3 = Library.BackgroundColor,
         BorderSizePixel = 0,
         -- Сдвинули левее: теперь отступ от края панели табов всего 1 пиксель (150 + 1)
-        Position = UDim2.new(0, 140, 0, 40), 
+        Position = UDim2.new(0, 100, 0, 40), --тест
         -- Растянули: (151 + 5 пикселей зазора справа = 156)
         Size = UDim2.new(1, -156, 1, -45), 
         ClipsDescendants = true,
