@@ -1029,8 +1029,8 @@ function Funcs:AddKeyPicker(Idx, Info)
         local DisplayLabel = Library:CreateLabel({
             Size = UDim2.new(1, 0, 1, 0);
             TextSize = 13;
-            -- Если бинда нет (None), пишем '≡', иначе саму кнопку
-            Text = Info.Default == 'None' and '≡' or Info.Default;
+            -- Если бинда нет (None), пишем '=', иначе саму кнопку
+            Text = Info.Default == 'None' and '=' or Info.Default;
             TextColor3 = Color3.fromRGB(130, 130, 130); -- Тусклый серый цвет (как в Kamidere)
             TextXAlignment = Enum.TextXAlignment.Right; -- Прижимаем текст вправо к чекбоксу
             ZIndex = 8;
@@ -1164,7 +1164,7 @@ function Funcs:AddKeyPicker(Idx, Info)
 
         function KeyPicker:SetValue(Data)
             local Key, Mode = Data[1], Data[2];
-            DisplayLabel.Text = Key == 'None' and '≡' or Key; -- Заменяем None на ≡
+            DisplayLabel.Text = Key == 'None' and '=' or Key; -- Заменяем None на =
             KeyPicker.Value = Key;
             ModeButtons[Mode]:Select();
             KeyPicker:Update();
@@ -1222,7 +1222,7 @@ function Funcs:AddKeyPicker(Idx, Info)
                     Break = true;
                     Picking = false;
 
-                    DisplayLabel.Text = Key == 'None' and '≡' or Key; -- Применяем магию '≡'
+                    DisplayLabel.Text = Key == 'None' and '=' or Key; -- Применяем магию '='
                     KeyPicker.Value = Key;
 
                     Library:SafeCallback(KeyPicker.ChangedCallback, Input.KeyCode or Input.UserInputType)
