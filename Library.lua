@@ -2803,13 +2803,11 @@ local TabButton = Library:Create('Frame', {
 
         -- Твоя розовая полоска справа
 local TabHighlight = Library:Create('Frame', {
-            BackgroundColor3 = Library.AccentColor,
+            BackgroundColor3 = Color3.new(0, 1, 0), -- ДЕЛАЕМ ЧИСТО ЗЕЛЕНЫМ
             BorderSizePixel = 0,
-            -- МАГИЯ ЗДЕСЬ: Якорь на правом крае и по центру высоты
-            AnchorPoint = Vector2.new(1, 0.5), 
-            -- ПОЗИЦИЯ: Ровно 100% ширины (1) и 50% высоты (0.5). Никаких пикселей-костылей.
-            Position = UDim2.new(1, 0, 0.5, 0), 
-            Size = UDim2.new(0, 2, 0, 16),
+            -- Отодвигаем жестко влево на 15 пикселей от правого края:
+            Position = UDim2.new(1, -15, 0.5, -8), 
+            Size = UDim2.new(0, 10, 0, 16), -- Делаем ее жирной (10 пикселей в ширину)
             Visible = false,
             ZIndex = 5,
             Parent = TabButton;
