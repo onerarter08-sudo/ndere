@@ -1392,14 +1392,14 @@ function Funcs:AddButton(...)
                 Size = UDim2.new(1, 0, 1, 0);
                 TextSize = 13;
                 Text = Button.Text;
-                TextColor3 = Color3.fromRGB(0, 0, 0); -- Жестко белый цвет, чтобы читалось на любом акценте
+                TextColor3 = Library.MainColor; -- ТЕПЕРЬ ТУТ MAIN COLOR
                 ZIndex = 6;
                 Parent = Outer;
             });
 
-            -- Отвязываем цвет текста от темы, чтобы он всегда был белым
+            -- Привязываем цвет текста к MainColor, чтобы он менялся вместе с темой
             if Library.RegistryMap[Label] then
-                Library.RegistryMap[Label].Properties.TextColor3 = nil;
+                Library.RegistryMap[Label].Properties.TextColor3 = 'MainColor';
             end
 
             -- 3. Приятная анимация (отклик) при наведении мыши
