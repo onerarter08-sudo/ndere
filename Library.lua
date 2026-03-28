@@ -1375,34 +1375,35 @@ function Funcs:AddButton(...)
         local Groupbox = self;
         local Container = Groupbox.Container;
 
-        local function CreateBaseButton(Button)
-            -- 1. Полностью залитая цветом акцента кнопка
+    local function CreateBaseButton(Button)
             local Outer = Library:Create('Frame', {
-                BackgroundColor3 = Library.AccentColor; -- Фулл цвет акцента
-                BorderSizePixel = 0; -- Без аутлайнов
+                BackgroundColor3 = Library.AccentColor;
+                BorderSizePixel = 0;
                 Size = UDim2.new(1, -4, 0, 24);
                 ZIndex = 5;
             });
 
-            Library:Create('UICorner', { CornerRadius = UDim.new(0, 4), Parent = Outer }); -- Скругление
+            Library:Create('UICorner', { CornerRadius = UDim.new(0, 4), Parent = Outer });
             Library:AddToRegistry(Outer, { BackgroundColor3 = 'AccentColor'; });
 
-            -- 2. Текст внутри кнопки
             local Label = Library:CreateLabel({
                 Size = UDim2.new(1, 0, 1, 0);
                 TextSize = 13;
                 Text = Button.Text;
-                TextColor3 = Library.MainColor; -- ТЕПЕРЬ ТУТ MAIN COLOR
                 ZIndex = 6;
                 Parent = Outer;
             });
 
-            -- Привязываем цвет текста к MainColor, чтобы он менялся вместе с темой
-            if Library.RegistryMap[Label] then
-                Library.RegistryMap[Label].Properties.TextColor3 = 'MainColor';
-            end
+            -- ЖЕСТКИЙ ФИКС ЦВЕТА:
+            -- 1. Удаляем текст из старого реестра (где он был белым)
+            Library:RemoveFromRegistry(Label)
+            
+            -- 2. Красим его в темный цвет меню
+            Label.TextColor3 = Library.MainColor
+            
+            -- 3. Добавляем обратно в реестр, но уже с привязкой к MainColor!
+            Library:AddToRegistry(Label, { TextColor3 = 'MainColor' })
 
-            -- 3. Приятная анимация (отклик) при наведении мыши
             Outer.MouseEnter:Connect(function()
                 Outer.BackgroundTransparency = 0.15;
             end)
