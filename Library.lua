@@ -1942,42 +1942,45 @@ function Funcs:AddSlider(Idx, Info)
         local Groupbox = self;
         local Container = Groupbox.Container;
 
-        -- 1. Главный контейнер (вмещает и текст, и саму линию)
+        -- 1. Общий прозрачный контейнер
         local SliderContainer = Library:Create('Frame', {
             BackgroundTransparency = 1;
-            Size = UDim2.new(1, -4, 0, 32); -- Высота под текст и ползунок
+            BorderSizePixel = 0;
+            Size = UDim2.new(1, -4, 0, 30); -- Жесткая высота под текст и ползунок
             ZIndex = 5;
             Parent = Container;
         });
 
-        -- 2. Текст названия (слева сверху)
+        -- 2. Текст названия (Слева сверху)
         local SliderLabel = Library:CreateLabel({
             Size = UDim2.new(0.5, 0, 0, 14);
             Position = UDim2.new(0, 0, 0, 0);
             TextSize = 13;
             Text = Info.Text;
-            TextXAlignment = Enum.TextXAlignment.Left;
+            TextXAlignment = Enum.TextXAlignment.Left; -- Прижат влево
             ZIndex = 6;
             Parent = SliderContainer;
         });
 
-        -- 3. Цифры значения (справа сверху)
+        -- 3. Текст цифр (Справа сверху, на уровне названия)
         local SliderValueLabel = Library:CreateLabel({
             Size = UDim2.new(0.5, 0, 0, 14);
             Position = UDim2.new(0.5, 0, 0, 0);
             TextSize = 13;
             Text = tostring(Info.Default) .. (Info.Suffix or '');
-            TextXAlignment = Enum.TextXAlignment.Right;
+            TextXAlignment = Enum.TextXAlignment.Right; -- Прижат вправо
             ZIndex = 6;
             Parent = SliderContainer;
         });
 
-        -- 4. Внешняя линия (фон слайдера, тонкий)
+        -- 4. Тонкая серая линия (Фон)
         local SliderOuter = Library:Create('Frame', {
             BackgroundColor3 = Library.OutlineColor;
             BorderSizePixel = 0;
-            Position = UDim2.new(0, 0, 0, 22); -- Опускаем под текст
-            Size = UDim2.new(1, 0, 0, 4); -- ТОЛЩИНА ЛИНИИ (4 пикселя)
+            BorderMode = Enum.BorderMode.Outline; -- Глушим встроенные черные рамки
+            ClipsDescendants = false; -- ВАЖНО: чтобы кружок не обрезался!
+            Position = UDim2.new(0, 0, 0, 22); -- Опустили под текст
+            Size = UDim2.new(1, 0, 0, 4); -- ТОЛЩИНА 4 ПИКСЕЛЯ!
             ZIndex = 5;
             Parent = SliderContainer;
         });
@@ -1985,10 +1988,13 @@ function Funcs:AddSlider(Idx, Info)
         Library:Create('UICorner', { CornerRadius = UDim.new(0, 4), Parent = SliderOuter });
         Library:AddToRegistry(SliderOuter, { BackgroundColor3 = 'OutlineColor'; });
 
-        -- 5. Заполненная часть (цвет акцента)
+        -- 5. Цветная полоска (Заливка)
         local SliderInner = Library:Create('Frame', {
             BackgroundColor3 = Library.AccentColor;
             BorderSizePixel = 0;
+            BorderMode = Enum.BorderMode.Outline;
+            ClipsDescendants = false; -- ВАЖНО: чтобы кружок не обрезался!
+            Position = UDim2.new(0, 0, 0, 0);
             Size = UDim2.new(0, 0, 1, 0);
             ZIndex = 6;
             Parent = SliderOuter;
@@ -1997,31 +2003,29 @@ function Funcs:AddSlider(Idx, Info)
         Library:Create('UICorner', { CornerRadius = UDim.new(0, 4), Parent = SliderInner });
         Library:AddToRegistry(SliderInner, { BackgroundColor3 = 'AccentColor'; });
 
-        -- 6. КРУЖОЧЕК НА КОНЦЕ (Knob)
+        -- 6. Белый кружок (Ползунок)
         local SliderKnob = Library:Create('Frame', {
-            BackgroundColor3 = Color3.fromRGB(255, 255, 255); -- Белый кружок (выглядит очень сочно)
+            BackgroundColor3 = Color3.fromRGB(255, 255, 255);
             BorderSizePixel = 0;
-            AnchorPoint = Vector2.new(0.5, 0.5); -- Якорь ровно по центру
-            Position = UDim2.new(1, 0, 0.5, 0); -- Привязан к концу закрашенной линии
-            Size = UDim2.new(0, 10, 0, 10); -- РАЗМЕР КРУЖКА (10x10)
+            AnchorPoint = Vector2.new(0.5, 0.5); -- Центрируем
+            Position = UDim2.new(1, 0, 0.5, 0); -- Крепим к правому краю SliderInner
+            Size = UDim2.new(0, 10, 0, 10); -- Размер кружка
             ZIndex = 7;
             Parent = SliderInner;
         });
 
-        -- Скругление на максимум, чтобы получился идеальный круг
         Library:Create('UICorner', { CornerRadius = UDim.new(1, 0), Parent = SliderKnob });
 
-        -- Невидимая кнопка для захвата мыши
+        -- 7. Невидимая зона для перетаскивания
         local SliderInteract = Library:Create('TextButton', {
             BackgroundTransparency = 1;
-            Position = UDim2.new(0, 0, 0, 15);
-            Size = UDim2.new(1, 0, 0, 15);
+            Position = UDim2.new(0, 0, 0, 14);
+            Size = UDim2.new(1, 0, 0, 16);
             Text = '';
             ZIndex = 8;
             Parent = SliderContainer;
         });
 
-        -- Логика перетаскивания
         local Dragging = false;
 
         function Slider:SetRaw(Percent)
@@ -2041,7 +2045,7 @@ function Funcs:AddSlider(Idx, Info)
             SliderValueLabel.Text = tostring(Num) .. (Info.Suffix or '');
 
             local Percent = (Num - Info.Min) / (Info.Max - Info.Min);
-            -- Анимация заполнения
+            -- Плавная анимация линии
             TweenService:Create(SliderInner, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
                 Size = UDim2.new(Percent, 0, 1, 0)
             }):Play();
@@ -2079,7 +2083,7 @@ function Funcs:AddSlider(Idx, Info)
 
         Slider:SetValue(Slider.Value);
         
-        Groupbox:AddBlank(Info.BlankSize or 9);
+        Groupbox:AddBlank(Info.BlankSize or 6);
         Groupbox:Resize();
 
         Options[Idx] = Slider;
