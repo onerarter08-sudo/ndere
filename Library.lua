@@ -2793,7 +2793,8 @@ local TabButton = Library:Create('Frame', {
             BackgroundTransparency = 1,
             BackgroundColor3 = Library.MainColor,
             BorderSizePixel = 0,
-            Size = UDim2.new(1, 0, 0, 24), -- ВОТ ТУТ: 1, 0 (на всю ширину)
+            -- ВАЖНО: должно быть (1, 0), без всяких минусов!
+            Size = UDim2.new(1, 0, 0, 24), 
             ZIndex = 4,
             Parent = TabArea;
         });
@@ -2804,9 +2805,10 @@ local TabButton = Library:Create('Frame', {
 local TabHighlight = Library:Create('Frame', {
             BackgroundColor3 = Library.AccentColor,
             BorderSizePixel = 0,
-            -- ПЕРЕШЛИ НА АБСОЛЮТНЫЕ ПИКСЕЛИ ОТ ЛЕВОГО КРАЯ:
-            -- 0 (считаем слева), 149 (пикселей вправо), 0.5 (центр по высоте), -8 (смещение центра)
-            Position = UDim2.new(0, 120, 0.5, -8), 
+            -- МАГИЯ ЗДЕСЬ: Якорь на правом крае и по центру высоты
+            AnchorPoint = Vector2.new(1, 0.5), 
+            -- ПОЗИЦИЯ: Ровно 100% ширины (1) и 50% высоты (0.5). Никаких пикселей-костылей.
+            Position = UDim2.new(1, 0, 0.5, 0), 
             Size = UDim2.new(0, 2, 0, 16),
             Visible = false,
             ZIndex = 5,
