@@ -2766,12 +2766,12 @@ if Library.RegistryMap[WindowLabel] then
         Parent = TabArea;
     });
 
--- Тот самый фрейм ЗА всеми групбоксами
+-- Тот самый фрейм ЗА всеми групбоксами (с отступом под Топ-бар)
     local TabContainer = Library:Create('Frame', {
-        BackgroundColor3 = Library.BackgroundColor, -- Цвет БГ
+        BackgroundColor3 = Library.BackgroundColor,
         BorderSizePixel = 0,
-        Position = UDim2.new(0, 145, 0, 12), -- Аккуратные отступы сверху и слева
-        Size = UDim2.new(1, -157, 1, -24), -- Отступы справа и снизу
+        Position = UDim2.new(0, 145, 0, 40), -- ОПУСТИЛИ НИЖЕ (теперь сверху есть 40 пикселей под топ-бар и вотермарку)
+        Size = UDim2.new(1, -157, 1, -52), -- Уменьшили высоту, чтобы снизу остался аккуратный отступ 12px
         ZIndex = 2;
         Parent = Outer;
     });
